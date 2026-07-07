@@ -1,5 +1,7 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/Kartly.Api/Kartly.Api.csproj" />
+    <Project Path="src/Kartly.Application/Kartly.Application.csproj" />
+    <Project Path="src/Kartly.Infrastructure/Kartly.Infrastructure.csproj" />
   </Folder>
 </Solution>

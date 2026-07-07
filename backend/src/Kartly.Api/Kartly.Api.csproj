@@ -10,4 +10,9 @@
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Kartly.Application\Kartly.Application.csproj" />
+    <ProjectReference Include="..\Kartly.Infrastructure\Kartly.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>
