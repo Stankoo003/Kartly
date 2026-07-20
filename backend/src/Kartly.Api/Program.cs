@@ -1,5 +1,6 @@
 using Kartly.Application;
 using Kartly.Infrastructure;
+using Kartly.Infrastructure.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,9 +13,12 @@ builder.Services.AddHealthChecks();
 
 // Compose the layers: business logic + data-access implementations.
 builder.Services.AddApplication();
-builder.Services.AddInfrastructure();
+builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
+
+// Apply migrations and seed roles + the default admin account on startup.
+await KartlyDbInitializer.InitializeAsync(app.Services);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -28,9 +32,13 @@ else
     app.UseHttpsRedirection();
 }
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 app.MapHealthChecks("/api/health");
 
 app.Run();
+
+// Exposed so the integration test project can boot the app via WebApplicationFactory.
+public partial class Program;

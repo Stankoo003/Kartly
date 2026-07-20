@@ -4,4 +4,7 @@
     <Project Path="src/Kartly.Application/Kartly.Application.csproj" />
     <Project Path="src/Kartly.Infrastructure/Kartly.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Kartly.IntegrationTests/Kartly.IntegrationTests.csproj" />
+  </Folder>
 </Solution>
