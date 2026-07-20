@@ -1,21 +1,16 @@
-<main style="max-width: 480px; margin: 2rem auto; font-family: system-ui, sans-serif">
-  <h1>Kartly — products</h1>
-  <p>API health (<code>/api/health</code>): <strong>{{ health() }}</strong></p>
-  <p>Data below comes live from the .NET API via <code>/api/products</code>.</p>
-
-  <form (submit)="$event.preventDefault(); add()" style="display: flex; gap: 0.5rem; margin: 1rem 0">
-    <input [(ngModel)]="name" name="name" placeholder="Name" required />
-    <input [(ngModel)]="price" name="price" type="number" step="0.01" placeholder="Price" style="width: 90px" />
-    <button type="submit">Add</button>
-  </form>
-
-  @if (products().length === 0) {
-    <p>No products yet — add one above.</p>
-  } @else {
-    <ul>
-      @for (p of products(); track p.id) {
-        <li>{{ p.name }} — {{ p.price | number: '1.2-2' }}</li>
-      }
-    </ul>
+<nav style="display: flex; gap: 1rem; align-items: center; padding: 0.75rem 1rem; border-bottom: 1px solid #ddd; font-family: system-ui, sans-serif">
+  <a routerLink="/">Home</a>
+  @if (auth.isAdmin()) {
+    <a routerLink="/admin">Admin</a>
   }
-</main>
+  <span style="margin-left: auto">
+    @if (auth.isAuthenticated()) {
+      <span>{{ auth.email() }} ({{ auth.role() }})</span>
+      <button type="button" (click)="logout()" style="margin-left: 0.5rem">Sign out</button>
+    } @else {
+      <a routerLink="/login">Sign in</a>
+    }
+  </span>
+</nav>
+
+<router-outlet />
