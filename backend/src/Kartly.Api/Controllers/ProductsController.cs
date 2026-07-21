@@ -18,9 +18,7 @@ public sealed class ProductsController(IProductService productService) : Control
     [Authorize(Roles = Roles.Admin)] // only admins may add products
     public async Task<ActionResult<Product>> Create(CreateProductRequest request, CancellationToken ct)
     {
-        var product = await productService.CreateProductAsync(request.Name, request.Price, ct);
+        var product = await productService.CreateProductAsync(request, ct);
         return CreatedAtAction(nameof(GetAll), new { id = product.Id }, product);
     }
 }
-
-public sealed record CreateProductRequest(string Name, decimal Price);
