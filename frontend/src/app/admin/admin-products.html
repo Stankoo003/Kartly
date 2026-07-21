@@ -1,0 +1,150 @@
+<main class="screen">
+  <header class="screen-head">
+    <div>
+      <h2>Products</h2>
+      <p class="text-muted count">{{ total() }} total</p>
+    </div>
+    <button uiButton variant="primary" (click)="openCreate()">+ Add product</button>
+  </header>
+
+  @if (error()) {
+    <div class="banner" role="alert">
+      <span>{{ error() }}</span>
+      <button uiButton variant="ghost" size="sm" (click)="load()">Retry</button>
+    </div>
+  }
+
+  @if (loading()) {
+    <p class="state text-muted">Loading…</p>
+  } @else if (products().length === 0) {
+    <div class="card elev-sm empty">
+      <p class="text-muted">No products yet.</p>
+      <button uiButton variant="secondary" (click)="openCreate()">Add the first one</button>
+    </div>
+  } @else {
+    <div class="card elev-sm table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>SKU</th>
+            <th>Brand</th>
+            <th class="num">Price</th>
+            <th class="num">Stock</th>
+            <th>Featured</th>
+            <th class="actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of products(); track p.id) {
+            <tr>
+              <td>{{ p.name }}</td>
+              <td class="text-muted">{{ p.sku }}</td>
+              <td>{{ p.brand || '—' }}</td>
+              <td class="num">{{ p.price | number: '1.2-2' }}</td>
+              <td class="num">{{ p.stockQuantity }}</td>
+              <td>
+                @if (p.isFeatured) { <span class="tag tag-accent">Featured</span> }
+                @else { <span class="text-muted">—</span> }
+              </td>
+              <td class="actions">
+                <button uiButton variant="ghost" size="sm" (click)="openEdit(p)">Edit</button>
+                <button uiButton variant="danger" size="sm" (click)="openDelete(p)">Delete</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <nav class="pager">
+      <button uiButton variant="secondary" size="sm" [disabled]="page() <= 1" (click)="goToPage(page() - 1)">
+        Prev
+      </button>
+      <span class="text-muted">Page {{ page() }} / {{ totalPages() }}</span>
+      <button uiButton variant="secondary" size="sm" [disabled]="page() >= totalPages()" (click)="goToPage(page() + 1)">
+        Next
+      </button>
+    </nav>
+  }
+</main>
+
+<!-- Create / Edit dialog -->
+<ui-dialog [open]="dialogMode() === 'create' || dialogMode() === 'edit'" (close)="closeDialog()">
+  <h3 class="dialog-title">{{ dialogMode() === 'edit' ? 'Edit product' : 'New product' }}</h3>
+  <form class="dialog-body form" (submit)="$event.preventDefault(); submitForm()">
+    <div class="grid-2">
+      <div class="field span-2">
+        <label>Name *</label>
+        <input class="input" name="name" [(ngModel)]="form.name" required />
+      </div>
+      <div class="field">
+        <label>Price *</label>
+        <input class="input" name="price" type="number" step="0.01" [(ngModel)]="form.price" required />
+      </div>
+      <div class="field">
+        <label>Discount price</label>
+        <input class="input" name="discountPrice" type="number" step="0.01" [(ngModel)]="form.discountPrice" />
+      </div>
+
+      @if (dialogMode() === 'edit') {
+        <div class="field">
+          <label>Slug *</label>
+          <input class="input" name="slug" [(ngModel)]="form.slug" required />
+        </div>
+        <div class="field">
+          <label>SKU *</label>
+          <input class="input" name="sku" [(ngModel)]="form.sku" required />
+        </div>
+      }
+
+      <div class="field">
+        <label>Brand</label>
+        <input class="input" name="brand" [(ngModel)]="form.brand" />
+      </div>
+      <div class="field">
+        <label>Model</label>
+        <input class="input" name="model" [(ngModel)]="form.model" />
+      </div>
+      <div class="field">
+        <label>Stock quantity</label>
+        <input class="input" name="stockQuantity" type="number" [(ngModel)]="form.stockQuantity" />
+      </div>
+      <div class="field">
+        <label>Warranty (months)</label>
+        <input class="input" name="warrantyMonths" type="number" [(ngModel)]="form.warrantyMonths" />
+      </div>
+      <div class="field span-2">
+        <label>Description</label>
+        <textarea class="input" name="description" [(ngModel)]="form.description"></textarea>
+      </div>
+      <label class="checkbox"><input type="checkbox" name="isFeatured" [(ngModel)]="form.isFeatured" /> Featured</label>
+      <label class="checkbox"><input type="checkbox" name="isActive" [(ngModel)]="form.isActive" /> Active</label>
+    </div>
+
+    @if (formError()) {
+      <p class="form-error" role="alert">{{ formError() }}</p>
+    }
+
+    <div class="dialog-actions">
+      <button uiButton variant="secondary" type="button" [disabled]="saving()" (click)="closeDialog()">Cancel</button>
+      <button uiButton variant="primary" type="submit" [disabled]="saving()">
+        {{ saving() ? 'Saving…' : (dialogMode() === 'edit' ? 'Save changes' : 'Create') }}
+      </button>
+    </div>
+  </form>
+</ui-dialog>
+
+<!-- Delete confirmation -->
+<ui-dialog [open]="dialogMode() === 'delete'" (close)="closeDialog()">
+  <h3 class="dialog-title">Delete product</h3>
+  <div class="dialog-body">
+    <p>Delete <strong>{{ deleting?.name }}</strong>? It will be removed from the catalog.</p>
+  </div>
+  <div class="dialog-actions">
+    <button uiButton variant="secondary" [disabled]="saving()" (click)="closeDialog()">Cancel</button>
+    <button uiButton variant="danger" [disabled]="saving()" (click)="confirmDelete()">
+      {{ saving() ? 'Deleting…' : 'Delete' }}
+    </button>
+  </div>
+</ui-dialog>
