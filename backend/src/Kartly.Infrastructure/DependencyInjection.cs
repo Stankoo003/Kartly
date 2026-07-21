@@ -17,10 +17,11 @@ public static class DependencyInjection
     /// <summary>Registers data-access implementations plus Identity + JWT authentication.</summary>
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration config)
     {
-        // Singleton so in-memory product data survives across requests during dev.
-        services.AddSingleton<IProductRepository, InMemoryProductRepository>();
-
         AddPersistenceAndIdentity(services, config);
+
+        // Scoped to match the (scoped) EF Core DbContext lifetime.
+        services.AddScoped<IProductRepository, EfProductRepository>();
+
         AddJwtAuthentication(services, config);
 
         return services;

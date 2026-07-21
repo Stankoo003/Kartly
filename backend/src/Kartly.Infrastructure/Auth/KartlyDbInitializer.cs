@@ -1,4 +1,5 @@
 using Kartly.Application.Auth;
+using Kartly.Infrastructure.Products;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,7 +20,8 @@ public static class KartlyDbInitializer
         using var scope = services.CreateScope();
         var sp = scope.ServiceProvider;
 
-        await sp.GetRequiredService<KartlyDbContext>().Database.MigrateAsync(ct);
+        var context = sp.GetRequiredService<KartlyDbContext>();
+        await context.Database.MigrateAsync(ct);
 
         var roleManager = sp.GetRequiredService<RoleManager<IdentityRole>>();
         foreach (var role in Roles.All)
@@ -38,5 +40,7 @@ public static class KartlyDbInitializer
             await userManager.CreateAsync(admin, DefaultAdminPassword);
             await userManager.AddToRoleAsync(admin, Roles.Admin);
         }
+
+        await ProductSeeder.SeedAsync(context, ct);
     }
 }
