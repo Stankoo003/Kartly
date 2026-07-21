@@ -1,56 +1,46 @@
 namespace Kartly.Application.Products;
 
-/// <summary>
-/// Data needed to create a product. <see cref="Slug"/> and <see cref="Sku"/> are
-/// optional — when omitted they are derived from the name / generated automatically.
-/// </summary>
-public sealed record CreateProductRequest(
-    string Name,
-    decimal Price,
-    string? Slug = null,
-    string? Sku = null,
-    string? Brand = null,
-    string? Model = null,
-    string? Description = null,
-    decimal? DiscountPrice = null,
-    int StockQuantity = 0,
-    int? WarrantyMonths = null,
-    bool IsFeatured = false,
-    bool IsActive = true);
-
 /// <summary>Application/business logic. Depends only on the repository contract.</summary>
 public interface IProductService
 {
-    Task<IReadOnlyList<Product>> GetProductsAsync(CancellationToken ct = default);
-    Task<Product> CreateProductAsync(CreateProductRequest request, CancellationToken ct = default);
+    Task<PagedResult<ProductResponse>> GetProductsAsync(ProductQueryParameters query, CancellationToken ct = default);
+    Task<ProductResponse> GetProductByIdAsync(Guid id, CancellationToken ct = default);
+    Task<ProductResponse> CreateProductAsync(CreateProductRequest request, CancellationToken ct = default);
+    Task<ProductResponse> UpdateProductAsync(Guid id, UpdateProductRequest request, CancellationToken ct = default);
+    Task DeleteProductAsync(Guid id, CancellationToken ct = default);
 }
 
 public sealed class ProductService(IProductRepository repository) : IProductService
 {
-    public Task<IReadOnlyList<Product>> GetProductsAsync(CancellationToken ct = default)
-        => repository.GetAllAsync(ct);
-
-    public async Task<Product> CreateProductAsync(CreateProductRequest request, CancellationToken ct = default)
+    public async Task<PagedResult<ProductResponse>> GetProductsAsync(
+        ProductQueryParameters query, CancellationToken ct = default)
     {
-        if (string.IsNullOrWhiteSpace(request.Name))
-            throw new ArgumentException("Name is required.", nameof(request));
-        if (request.Price < 0)
-            throw new ArgumentOutOfRangeException(nameof(request), "Price cannot be negative.");
-        if (request.DiscountPrice is < 0)
-            throw new ArgumentOutOfRangeException(nameof(request), "Discount price cannot be negative.");
-        if (request.DiscountPrice > request.Price)
-            throw new ArgumentException("Discount price cannot exceed price.", nameof(request));
-        if (request.StockQuantity < 0)
-            throw new ArgumentOutOfRangeException(nameof(request), "Stock quantity cannot be negative.");
-        if (request.WarrantyMonths is < 0)
-            throw new ArgumentOutOfRangeException(nameof(request), "Warranty months cannot be negative.");
+        var (items, total) = await repository.GetPagedAsync(query, ct);
+        var responses = items.Select(ProductResponse.FromEntity).ToList();
+        return new PagedResult<ProductResponse>(responses, query.Page, query.PageSize, total);
+    }
 
+    public async Task<ProductResponse> GetProductByIdAsync(Guid id, CancellationToken ct = default)
+    {
+        var product = await repository.GetByIdAsync(id, ct)
+            ?? throw new ProductNotFoundException(id);
+        return ProductResponse.FromEntity(product);
+    }
+
+    public async Task<ProductResponse> CreateProductAsync(CreateProductRequest request, CancellationToken ct = default)
+    {
         var name = request.Name.Trim();
         var slug = string.IsNullOrWhiteSpace(request.Slug) ? Slugify(name) : Slugify(request.Slug);
         var sku = string.IsNullOrWhiteSpace(request.Sku)
             ? $"SKU-{Guid.NewGuid().ToString("N")[..8].ToUpperInvariant()}"
             : request.Sku.Trim();
 
+        if (await repository.SlugExistsAsync(slug, null, ct))
+            throw new ProductConflictException($"A product with slug '{slug}' already exists.");
+        if (await repository.SkuExistsAsync(sku, null, ct))
+            throw new ProductConflictException($"A product with sku '{sku}' already exists.");
+
+        var now = DateTime.UtcNow;
         var product = new Product
         {
             Name = name,
@@ -65,9 +55,54 @@ public sealed class ProductService(IProductRepository repository) : IProductServ
             WarrantyMonths = request.WarrantyMonths,
             IsFeatured = request.IsFeatured,
             IsActive = request.IsActive,
+            CreatedAt = now,
+            UpdatedAt = now,
         };
         await repository.AddAsync(product, ct);
-        return product;
+        return ProductResponse.FromEntity(product);
+    }
+
+    public async Task<ProductResponse> UpdateProductAsync(
+        Guid id, UpdateProductRequest request, CancellationToken ct = default)
+    {
+        var product = await repository.GetByIdAsync(id, ct)
+            ?? throw new ProductNotFoundException(id);
+
+        var slug = Slugify(request.Slug);
+        var sku = request.Sku.Trim();
+
+        if (await repository.SlugExistsAsync(slug, id, ct))
+            throw new ProductConflictException($"A product with slug '{slug}' already exists.");
+        if (await repository.SkuExistsAsync(sku, id, ct))
+            throw new ProductConflictException($"A product with sku '{sku}' already exists.");
+
+        product.Name = request.Name.Trim();
+        product.Slug = slug;
+        product.Sku = sku;
+        product.Brand = request.Brand?.Trim();
+        product.Model = request.Model?.Trim();
+        product.Description = request.Description?.Trim();
+        product.Price = request.Price;
+        product.DiscountPrice = request.DiscountPrice;
+        product.StockQuantity = request.StockQuantity;
+        product.WarrantyMonths = request.WarrantyMonths;
+        product.IsFeatured = request.IsFeatured;
+        product.IsActive = request.IsActive;
+        product.UpdatedAt = DateTime.UtcNow;
+
+        await repository.UpdateAsync(product, ct);
+        return ProductResponse.FromEntity(product);
+    }
+
+    public async Task DeleteProductAsync(Guid id, CancellationToken ct = default)
+    {
+        var product = await repository.GetByIdAsync(id, ct)
+            ?? throw new ProductNotFoundException(id);
+
+        // Soft delete — keep the row (order history / future FKs) but hide it from listings.
+        product.IsActive = false;
+        product.UpdatedAt = DateTime.UtcNow;
+        await repository.UpdateAsync(product, ct);
     }
 
     private static string Slugify(string value)
