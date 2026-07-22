@@ -11,9 +11,11 @@ public sealed record ProductResponse(
     string Name,
     string Slug,
     string Sku,
+    string Category,
     string? Brand,
     string? Model,
     string? Description,
+    string? ImageUrl,
     decimal Price,
     decimal? DiscountPrice,
     int StockQuantity,
@@ -24,8 +26,8 @@ public sealed record ProductResponse(
     DateTime UpdatedAt)
 {
     public static ProductResponse FromEntity(Product p) => new(
-        p.Id, p.Name, p.Slug, p.Sku, p.Brand, p.Model, p.Description,
-        p.Price, p.DiscountPrice, p.StockQuantity, p.WarrantyMonths,
+        p.Id, p.Name, p.Slug, p.Sku, p.Category, p.Brand, p.Model, p.Description,
+        p.ImageUrl, p.Price, p.DiscountPrice, p.StockQuantity, p.WarrantyMonths,
         p.IsFeatured, p.IsActive, p.CreatedAt, p.UpdatedAt);
 }
 
@@ -38,6 +40,10 @@ public sealed record CreateProductRequest(
     [MaxLength(200)]
     string Name,
 
+    [Required]
+    [MaxLength(100)]
+    string Category,
+
     [Range(0, double.MaxValue, ErrorMessage = "Price cannot be negative.")]
     decimal Price,
 
@@ -46,6 +52,8 @@ public sealed record CreateProductRequest(
     [MaxLength(200)] string? Brand = null,
     [MaxLength(200)] string? Model = null,
     string? Description = null,
+
+    [MaxLength(400)] string? ImageUrl = null,
 
     [Range(0, double.MaxValue, ErrorMessage = "Discount price cannot be negative.")]
     decimal? DiscountPrice = null,
@@ -61,6 +69,10 @@ public sealed record CreateProductRequest(
 {
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
+        if (!ProductCategories.IsValid(Category))
+            yield return new ValidationResult(
+                $"Category must be one of: {string.Join(", ", ProductCategories.All)}.", [nameof(Category)]);
+
         if (DiscountPrice is { } discount && discount > Price)
             yield return new ValidationResult(
                 "Discount price cannot exceed price.", [nameof(DiscountPrice)]);
@@ -81,12 +93,18 @@ public sealed record UpdateProductRequest(
     [MaxLength(200)]
     string Sku,
 
+    [Required]
+    [MaxLength(100)]
+    string Category,
+
     [Range(0, double.MaxValue, ErrorMessage = "Price cannot be negative.")]
     decimal Price,
 
     [MaxLength(200)] string? Brand = null,
     [MaxLength(200)] string? Model = null,
     string? Description = null,
+
+    [MaxLength(400)] string? ImageUrl = null,
 
     [Range(0, double.MaxValue, ErrorMessage = "Discount price cannot be negative.")]
     decimal? DiscountPrice = null,
@@ -102,6 +120,10 @@ public sealed record UpdateProductRequest(
 {
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
+        if (!ProductCategories.IsValid(Category))
+            yield return new ValidationResult(
+                $"Category must be one of: {string.Join(", ", ProductCategories.All)}.", [nameof(Category)]);
+
         if (DiscountPrice is { } discount && discount > Price)
             yield return new ValidationResult(
                 "Discount price cannot exceed price.", [nameof(DiscountPrice)]);

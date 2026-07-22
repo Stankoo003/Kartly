@@ -9,7 +9,8 @@ namespace Kartly.Api.Controllers;
 [Route("api/[controller]")]
 [Authorize] // any authenticated user (Customer or Admin) may browse the catalog
 [Produces("application/json")]
-public sealed class ProductsController(IProductService productService) : ControllerBase
+public sealed class ProductsController(
+    IProductService productService, IImageStorage imageStorage) : ControllerBase
 {
     /// <summary>Returns a filtered, sorted, paginated list of products.</summary>
     [HttpGet]
@@ -32,6 +33,29 @@ public sealed class ProductsController(IProductService productService) : Control
         {
             return NotFound(new { error = ex.Message });
         }
+    }
+
+    /// <summary>Uploads a product image to the API's local storage and returns its URL. Admin only.</summary>
+    [HttpPost("images")]
+    [Authorize(Roles = Roles.Admin)]
+    [Consumes("multipart/form-data")]
+    [RequestSizeLimit(20 * 1024 * 1024)] // hard backstop well above the 5 MB rule so oversize gets a clean 400
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> UploadImage([FromForm] IFormFile? file, CancellationToken ct)
+    {
+        if (file is null || file.Length == 0)
+            return BadRequest(new { error = "No file was uploaded." });
+
+        if (file.Length > ImageUploadRules.MaxSizeBytes)
+            return BadRequest(new { error = $"Image exceeds the {ImageUploadRules.MaxSizeBytes / (1024 * 1024)} MB limit." });
+
+        if (!ImageUploadRules.AllowedContentTypes.TryGetValue(file.ContentType, out var extension))
+            return BadRequest(new { error = "Unsupported image type. Allowed types: JPEG, PNG, WebP." });
+
+        await using var stream = file.OpenReadStream();
+        var url = await imageStorage.SaveAsync(stream, extension, ct);
+        return Created(url, new { url });
     }
 
     /// <summary>Creates a product. Admin only.</summary>

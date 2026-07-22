@@ -1,7 +1,10 @@
 using System.Reflection;
 using Kartly.Application;
+using Kartly.Application.Products;
 using Kartly.Infrastructure;
 using Kartly.Infrastructure.Auth;
+using Kartly.Infrastructure.Products;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -40,6 +43,12 @@ builder.Services.AddHealthChecks();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
+// Local-disk image storage. Uploaded files live under {contentRoot}/media/uploads and are
+// served via the /api/media static-file route below; committed seed images live in media/seed.
+var mediaRoot = Path.Combine(builder.Environment.ContentRootPath, "media");
+Directory.CreateDirectory(mediaRoot);
+builder.Services.AddSingleton<IImageStorage>(new LocalImageStorage(mediaRoot));
+
 var app = builder.Build();
 
 // Apply migrations and seed roles + the default admin account on startup.
@@ -57,6 +66,14 @@ else
     // redirects would break it. Only redirect outside Development.
     app.UseHttpsRedirection();
 }
+
+// Serve uploaded and seed product images (anonymous). Kept under /api/* so the Angular dev
+// proxy forwards it and it works unchanged in production.
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(mediaRoot),
+    RequestPath = "/api/media",
+});
 
 app.UseAuthentication();
 app.UseAuthorization();

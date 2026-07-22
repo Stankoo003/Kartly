@@ -28,9 +28,11 @@ public sealed class KartlyDbContext(DbContextOptions<KartlyDbContext> options)
             product.Property(p => p.Name).HasColumnName("name").HasMaxLength(200).IsRequired();
             product.Property(p => p.Slug).HasColumnName("slug").HasMaxLength(200).IsRequired();
             product.Property(p => p.Sku).HasColumnName("sku").HasMaxLength(200).IsRequired();
+            product.Property(p => p.Category).HasColumnName("category").HasMaxLength(100).IsRequired();
             product.Property(p => p.Brand).HasColumnName("brand").HasMaxLength(200);
             product.Property(p => p.Model).HasColumnName("model").HasMaxLength(200);
             product.Property(p => p.Description).HasColumnName("description");
+            product.Property(p => p.ImageUrl).HasColumnName("image_url").HasMaxLength(400);
 
             product.Property(p => p.Price).HasColumnName("price").HasPrecision(18, 2);
             product.Property(p => p.DiscountPrice).HasColumnName("discount_price").HasPrecision(18, 2);
