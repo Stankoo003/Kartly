@@ -34,6 +34,9 @@ public sealed class AuthService(
         if (user is null || !await userManager.CheckPasswordAsync(user, request.Password))
             throw new AuthException("Invalid email or password.");
 
+        if (!user.IsActive)
+            throw new AuthException("This account has been deactivated.");
+
         var role = (await userManager.GetRolesAsync(user)).FirstOrDefault() ?? Roles.Customer;
         return tokenService.CreateToken(user, role);
     }

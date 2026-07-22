@@ -1,0 +1,138 @@
+<main class="screen">
+  <header class="screen-head">
+    <div>
+      <h2>Users</h2>
+      <p class="text-muted count">{{ total() }} total</p>
+    </div>
+    <form class="search" (submit)="$event.preventDefault(); applySearch()">
+      <input class="input" name="search" [(ngModel)]="search" placeholder="Search by email…" />
+      <button uiButton variant="secondary" type="submit">Search</button>
+    </form>
+  </header>
+
+  @if (error()) {
+    <div class="banner" role="alert">
+      <span>{{ error() }}</span>
+      <button uiButton variant="ghost" size="sm" (click)="load()">Retry</button>
+    </div>
+  }
+
+  @if (loading()) {
+    <p class="state text-muted">Loading…</p>
+  } @else if (users().length === 0) {
+    <div class="card elev-sm empty">
+      <p class="text-muted">No users found.</p>
+    </div>
+  } @else {
+    <div class="card elev-sm table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th class="actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (u of users(); track u.id) {
+            <tr>
+              <td>
+                {{ u.email }}
+                @if (isSelf(u)) { <span class="tag tag-neutral you">you</span> }
+              </td>
+              <td>
+                @if (u.role === 'Admin') { <span class="tag tag-accent">Admin</span> }
+                @else { <span class="tag tag-neutral">{{ u.role }}</span> }
+              </td>
+              <td>
+                @if (u.isActive) { <span class="tag tag-accent-2">Active</span> }
+                @else { <span class="tag tag-danger">Inactive</span> }
+              </td>
+              <td class="actions">
+                <button uiButton variant="ghost" size="sm" (click)="openDetails(u)">Details</button>
+                <button uiButton variant="ghost" size="sm" [disabled]="isSelf(u)" (click)="openRole(u)">Role</button>
+                @if (u.isActive) {
+                  <button uiButton variant="danger" size="sm" [disabled]="isSelf(u)" (click)="openDeactivate(u)">
+                    Deactivate
+                  </button>
+                } @else {
+                  <button uiButton variant="ghost" size="sm" (click)="activate(u)">Activate</button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <nav class="pager">
+      <button uiButton variant="secondary" size="sm" [disabled]="page() <= 1" (click)="goToPage(page() - 1)">
+        Prev
+      </button>
+      <span class="text-muted">Page {{ page() }} / {{ totalPages() }}</span>
+      <button uiButton variant="secondary" size="sm" [disabled]="page() >= totalPages()" (click)="goToPage(page() + 1)">
+        Next
+      </button>
+    </nav>
+  }
+</main>
+
+<!-- Change role dialog -->
+<ui-dialog [open]="dialogMode() === 'role'" (close)="closeDialog()">
+  <h3 class="dialog-title">Change role</h3>
+  <form class="dialog-body form" (submit)="$event.preventDefault(); saveRole()">
+    <p class="text-muted">{{ selected?.email }}</p>
+    <div class="field">
+      <label>Role</label>
+      <select class="input" name="role" [(ngModel)]="roleValue">
+        @for (r of roles; track r) {
+          <option [value]="r">{{ r }}</option>
+        }
+      </select>
+    </div>
+    @if (formError()) {
+      <p class="form-error" role="alert">{{ formError() }}</p>
+    }
+    <div class="dialog-actions">
+      <button uiButton variant="secondary" type="button" [disabled]="saving()" (click)="closeDialog()">Cancel</button>
+      <button uiButton variant="primary" type="submit" [disabled]="saving()">
+        {{ saving() ? 'Saving…' : 'Save' }}
+      </button>
+    </div>
+  </form>
+</ui-dialog>
+
+<!-- Deactivate confirmation -->
+<ui-dialog [open]="dialogMode() === 'deactivate'" (close)="closeDialog()">
+  <h3 class="dialog-title">Deactivate user</h3>
+  <div class="dialog-body">
+    <p>
+      Deactivate <strong>{{ selected?.email }}</strong>? They will be signed out on their next request
+      and won't be able to log in until reactivated.
+    </p>
+    @if (formError()) {
+      <p class="form-error" role="alert">{{ formError() }}</p>
+    }
+  </div>
+  <div class="dialog-actions">
+    <button uiButton variant="secondary" [disabled]="saving()" (click)="closeDialog()">Cancel</button>
+    <button uiButton variant="danger" [disabled]="saving()" (click)="confirmDeactivate()">
+      {{ saving() ? 'Deactivating…' : 'Deactivate' }}
+    </button>
+  </div>
+</ui-dialog>
+
+<!-- Details -->
+<ui-dialog [open]="dialogMode() === 'details'" (close)="closeDialog()">
+  <h3 class="dialog-title">User details</h3>
+  <div class="dialog-body details">
+    <div class="row"><span class="text-muted">Email</span><span>{{ selected?.email }}</span></div>
+    <div class="row"><span class="text-muted">Role</span><span>{{ selected?.role }}</span></div>
+    <div class="row"><span class="text-muted">Status</span><span>{{ selected?.isActive ? 'Active' : 'Inactive' }}</span></div>
+    <div class="row"><span class="text-muted">ID</span><span class="mono">{{ selected?.id }}</span></div>
+  </div>
+  <div class="dialog-actions">
+    <button uiButton variant="secondary" (click)="closeDialog()">Close</button>
+  </div>
+</ui-dialog>

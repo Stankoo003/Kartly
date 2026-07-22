@@ -41,6 +41,7 @@ public static class KartlyDbInitializer
             await userManager.AddToRoleAsync(admin, Roles.Admin);
         }
 
+        await UserSeeder.SeedAsync(userManager);
         await ProductSeeder.SeedAsync(context, ct);
     }
 }
