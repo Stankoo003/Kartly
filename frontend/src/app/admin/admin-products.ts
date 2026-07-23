@@ -1,8 +1,9 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
+import { CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ProductService } from '../products/product.service';
+import { SettingsService } from '../settings/settings.service';
 import {
   CreateProductRequest,
   PRODUCT_CATEGORIES,
@@ -56,12 +57,13 @@ const emptyForm = (): FormModel => ({
 /** Admin-only products screen: paginated list + create/edit/delete against the live API. */
 @Component({
   selector: 'app-admin-products',
-  imports: [DecimalPipe, FormsModule, UiButton, UiDialog],
+  imports: [CurrencyPipe, FormsModule, UiButton, UiDialog],
   templateUrl: './admin-products.html',
   styleUrl: './admin-products.scss',
 })
 export class AdminProducts {
   private readonly api = inject(ProductService);
+  protected readonly settings = inject(SettingsService);
 
   protected readonly categories = PRODUCT_CATEGORIES;
 

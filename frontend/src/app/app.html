@@ -1,5 +1,5 @@
 <nav class="nav elev-sm">
-  <a class="nav-brand" routerLink="/">Kartly</a>
+  <a class="nav-brand" routerLink="/">{{ settings.siteName() }}</a>
   <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
   @if (auth.isAdmin()) {
     <a routerLink="/admin" routerLinkActive="active">Admin</a>
@@ -14,3 +14,10 @@
 </nav>
 
 <router-outlet />
+
+<footer class="site-footer">
+  <span class="text-muted">© {{ settings.siteName() }}</span>
+  @if (settings.contactEmail()) {
+    <a [href]="'mailto:' + settings.contactEmail()">{{ settings.contactEmail() }}</a>
+  }
+</footer>

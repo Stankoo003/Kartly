@@ -40,7 +40,7 @@
             <th>Name</th>
             <th>Category</th>
             <th>SKU</th>
-            <th class="num">Price</th>
+            <th class="num">Price ({{ settings.currency() }})</th>
             <th class="num">Stock</th>
             <th>Status</th>
             <th class="actions">Actions</th>
@@ -59,7 +59,7 @@
               <td>{{ p.name }}</td>
               <td><span class="tag tag-neutral">{{ p.category }}</span></td>
               <td class="text-muted">{{ p.sku }}</td>
-              <td class="num">{{ p.price | number: '1.2-2' }}</td>
+              <td class="num">{{ p.price | currency: settings.currency() }}</td>
               <td class="num">{{ p.stockQuantity }}</td>
               <td>
                 @if (p.isActive) { <span class="tag tag-accent-2">Active</span> }
@@ -113,13 +113,13 @@
         @if (fieldErrors()['category']; as err) { <p class="field-error">{{ err }}</p> }
       </div>
       <div class="field">
-        <label>Price *</label>
+        <label>Price ({{ settings.currency() }}) *</label>
         <input class="input" name="price" type="number" step="0.01" min="0" [(ngModel)]="form.price" required />
         @if (fieldErrors()['price']; as err) { <p class="field-error">{{ err }}</p> }
       </div>
 
       <div class="field">
-        <label>Discount price</label>
+        <label>Discount price ({{ settings.currency() }})</label>
         <input class="input" name="discountPrice" type="number" step="0.01" min="0" [(ngModel)]="form.discountPrice" />
         @if (fieldErrors()['discountPrice']; as err) { <p class="field-error">{{ err }}</p> }
       </div>

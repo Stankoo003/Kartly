@@ -1,3 +1,14 @@
 .nav .spacer { margin-left: auto; }
 .nav .who { font-size: 13px; }
 .nav a.active { color: var(--color-accent); }
+
+.site-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  margin-top: var(--space-8);
+  padding: var(--space-4);
+  border-top: 1px solid var(--color-divider);
+  font-size: 13px;
+}

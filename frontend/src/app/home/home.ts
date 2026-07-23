@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
+import { CurrencyPipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { SettingsService } from '../settings/settings.service';
 
 interface Product {
   id: string;
@@ -11,10 +12,10 @@ interface Product {
 /** Public-ish landing: shows API health and the product catalog (requires a token). */
 @Component({
   selector: 'app-home',
-  imports: [DecimalPipe],
+  imports: [CurrencyPipe],
   template: `
     <main style="max-width: 480px; margin: 2rem auto; font-family: system-ui, sans-serif">
-      <h1>Kartly — products</h1>
+      <h1>{{ settings.siteName() }} — products</h1>
       <p>API health (<code>/api/health</code>): <strong>{{ health() }}</strong></p>
       <p>The catalog requires a valid token; sign in first.</p>
 
@@ -23,7 +24,7 @@ interface Product {
       } @else {
         <ul>
           @for (p of products(); track p.id) {
-            <li>{{ p.name }} — {{ p.price | number: '1.2-2' }}</li>
+            <li>{{ p.name }} — {{ p.price | currency: settings.currency() }}</li>
           }
         </ul>
       }
@@ -32,6 +33,7 @@ interface Product {
 })
 export class Home {
   private readonly http = inject(HttpClient);
+  protected readonly settings = inject(SettingsService);
 
   protected readonly products = signal<Product[]>([]);
   protected readonly health = signal('checking…');

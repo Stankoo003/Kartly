@@ -1,4 +1,5 @@
 using Kartly.Application.Products;
+using Kartly.Application.Settings;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,7 @@ public sealed class KartlyDbContext(DbContextOptions<KartlyDbContext> options)
     : IdentityDbContext<ApplicationUser, IdentityRole, string>(options)
 {
     public DbSet<Product> Products => Set<Product>();
+    public DbSet<SiteSettings> SiteSettings => Set<SiteSettings>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -48,6 +50,19 @@ public sealed class KartlyDbContext(DbContextOptions<KartlyDbContext> options)
 
             product.HasIndex(p => p.Slug).IsUnique();
             product.HasIndex(p => p.Sku).IsUnique();
+        });
+
+        builder.Entity<SiteSettings>(settings =>
+        {
+            settings.ToTable("site_settings");
+
+            settings.HasKey(s => s.Id);
+            settings.Property(s => s.Id).HasColumnName("id").ValueGeneratedNever();
+
+            settings.Property(s => s.SiteName).HasColumnName("site_name").HasMaxLength(100).IsRequired();
+            settings.Property(s => s.ContactEmail).HasColumnName("contact_email").HasMaxLength(200).IsRequired();
+            settings.Property(s => s.Currency).HasColumnName("currency").HasMaxLength(3).IsRequired();
+            settings.Property(s => s.UpdatedAt).HasColumnName("updated_at");
         });
     }
 }

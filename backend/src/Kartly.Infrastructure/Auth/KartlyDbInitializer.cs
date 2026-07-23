@@ -1,5 +1,6 @@
 using Kartly.Application.Auth;
 using Kartly.Infrastructure.Products;
+using Kartly.Infrastructure.Settings;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -43,5 +44,6 @@ public static class KartlyDbInitializer
 
         await UserSeeder.SeedAsync(userManager);
         await ProductSeeder.SeedAsync(context, ct);
+        await SettingsSeeder.SeedAsync(context, ct);
     }
 }
