@@ -1,0 +1,148 @@
+.listing { padding: 24px; }
+
+.crumbs { font-size: 13px; color: var(--store-muted); margin-bottom: 8px; }
+.crumbs a { color: var(--store-muted); }
+.crumbs a:hover { color: var(--store-accent-strong); }
+
+.listing-title { font-size: 30px; letter-spacing: -0.02em; margin: 0 0 22px; }
+
+.listing-grid {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+/* ── sidebar ── */
+.filters {
+  background: var(--store-surface);
+  border: 1px solid var(--store-border);
+  border-radius: var(--store-radius);
+  padding: 22px;
+  position: sticky;
+  top: 96px;
+}
+.filters-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.filters-title { font-weight: 700; font-size: 16px; }
+.filters-reset {
+  background: none; border: none; padding: 0; cursor: pointer;
+  font: inherit; font-size: 12.5px; font-weight: 600; color: var(--store-accent-strong);
+}
+.filter-group { margin-bottom: 22px; }
+.filter-group:last-child { margin-bottom: 0; }
+.filter-label { font-weight: 700; font-size: 13px; margin-bottom: 12px; }
+.filter-radio {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+  font-size: 14px;
+  cursor: pointer;
+}
+.filter-radio input { accent-color: var(--store-accent); }
+.filter-group input[type="range"] { width: 100%; accent-color: var(--store-accent); }
+
+/* ── results ── */
+.results-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--store-surface);
+  border: 1px solid var(--store-border);
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 18px;
+}
+.results-count { font-size: 13.5px; color: var(--store-ink-soft); }
+.results-sort { display: flex; align-items: center; gap: 10px; font-size: 13.5px; }
+.results-sort span { color: var(--store-muted); }
+.results-sort select {
+  border: 1px solid var(--store-border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font: inherit;
+  font-size: 13.5px;
+  background: var(--store-surface);
+  color: var(--store-ink);
+  cursor: pointer;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+/* ── skeletons ── */
+.skeleton {
+  background: var(--store-surface);
+  border: 1px solid var(--store-border);
+  border-radius: var(--store-radius);
+  overflow: hidden;
+  padding-bottom: 14px;
+}
+.skeleton-media { height: 220px; background: var(--store-panel); }
+.skeleton-line { height: 12px; border-radius: 4px; background: var(--store-panel); margin: 12px 15px 0; }
+.skeleton-line.w60 { width: 50%; }
+.skeleton-line.w80 { width: 80%; }
+.skeleton, .skeleton-media { animation: pulse 1.2s ease-in-out infinite; }
+@keyframes pulse { 50% { opacity: 0.55; } }
+
+/* ── state cards ── */
+.state-card {
+  background: var(--store-surface);
+  border: 1px solid var(--store-border);
+  border-radius: var(--store-radius);
+  padding: 48px 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.state-card.empty { padding: 64px 24px; }
+.empty-mark { font-size: 40px; }
+.state-card h3 { font-size: 22px; margin: 0; }
+.state-card p { color: var(--store-muted); font-size: 14.5px; margin: 0; }
+
+/* ── pager ── */
+.pager {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 32px;
+}
+.page-btn {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--store-border);
+  border-radius: 10px;
+  background: var(--store-surface);
+  color: var(--store-ink);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+.page-btn:hover:not(:disabled):not(.current) { border-color: var(--store-accent); }
+.page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.page-btn.current {
+  background: var(--store-ink);
+  border-color: var(--store-ink);
+  color: #fff;
+  font-weight: 700;
+}
+
+@media (max-width: 860px) {
+  .listing-grid { grid-template-columns: 1fr; }
+  .filters { position: static; }
+}
+@media (max-width: 640px) {
+  .listing { padding: 16px; }
+  .product-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+}

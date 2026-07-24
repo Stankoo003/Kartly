@@ -1,13 +1,14 @@
 import { Component, inject, signal } from '@angular/core';
-import { CurrencyPipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { ProductService } from '../products/product.service';
 import { SettingsService } from '../settings/settings.service';
+import { ProductCard } from '../products/product-card';
 import { PRODUCT_CATEGORIES, Product } from '../products/product.models';
 
 /** Public storefront home: hero, categories, featured + recent products, promo. No auth required. */
 @Component({
   selector: 'app-home',
-  imports: [CurrencyPipe],
+  imports: [RouterLink, ProductCard],
   templateUrl: './home.html',
   styleUrl: './home.scss',
 })
@@ -30,12 +31,5 @@ export class Home {
       next: r => this.recent.set(r.items),
       error: () => this.recent.set([]),
     });
-  }
-
-  /** Whole-number stock hint shown on the card. */
-  protected stockLabel(p: Product): string {
-    if (p.stockQuantity <= 0) return 'Out of stock';
-    if (p.stockQuantity < 10) return `Only ${p.stockQuantity} left`;
-    return 'In stock';
   }
 }

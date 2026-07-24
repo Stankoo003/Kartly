@@ -150,6 +150,9 @@ public sealed record ProductQueryParameters
     /// <summary>Exact brand filter.</summary>
     public string? Brand { get; init; }
 
+    /// <summary>Exact category filter (one of <see cref="ProductCategories.All"/>).</summary>
+    public string? Category { get; init; }
+
     public bool? IsFeatured { get; init; }
 
     /// <summary>Defaults to true so soft-deleted (inactive) products are hidden.</summary>

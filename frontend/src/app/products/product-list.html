@@ -1,0 +1,96 @@
+<main class="listing wrap">
+  <nav class="crumbs">
+    <a routerLink="/">Home</a> / Catalog
+  </nav>
+  <h1 class="listing-title">{{ resultLabel() }}</h1>
+
+  <div class="listing-grid">
+    <!-- FILTER SIDEBAR -->
+    <aside class="filters">
+      <div class="filters-head">
+        <span class="filters-title">Filter</span>
+        <button type="button" class="filters-reset" (click)="reset()">Reset</button>
+      </div>
+
+      <div class="filter-group">
+        <div class="filter-label">Category</div>
+        <label class="filter-radio">
+          <input type="radio" name="category" [checked]="category() === ''" (change)="setCategory('')" />
+          <span>All</span>
+        </label>
+        @for (c of allCategories; track c) {
+          <label class="filter-radio">
+            <input type="radio" name="category" [checked]="category() === c" (change)="setCategory(c)" />
+            <span>{{ c }}</span>
+          </label>
+        }
+      </div>
+
+      <div class="filter-group">
+        <div class="filter-label">
+          Max price ·
+          {{ maxPrice() >= maxPriceCap ? 'Any' : maxPrice() }}
+        </div>
+        <input
+          type="range" min="0" [max]="maxPriceCap" step="50"
+          [value]="maxPrice()"
+          (change)="setMaxPrice($any($event.target).value)" />
+      </div>
+    </aside>
+
+    <!-- RESULTS -->
+    <section class="results">
+      <div class="results-bar">
+        <span class="results-count">{{ showingLabel() }}</span>
+        <label class="results-sort">
+          <span>Sort by</span>
+          <select [value]="sort()" (change)="setSort($any($event.target).value)">
+            @for (o of sorts; track o.key) {
+              <option [value]="o.key">{{ o.label }}</option>
+            }
+          </select>
+        </label>
+      </div>
+
+      @if (error()) {
+        <div class="state-card">
+          <p>{{ error() }}</p>
+          <button type="button" class="btn btn-primary" (click)="goToPage(page())">Retry</button>
+        </div>
+      } @else if (loading()) {
+        <div class="product-grid">
+          @for (s of skeletons; track $index) {
+            <div class="skeleton">
+              <div class="skeleton-media"></div>
+              <div class="skeleton-line w60"></div>
+              <div class="skeleton-line w80"></div>
+            </div>
+          }
+        </div>
+      } @else if (total() === 0) {
+        <div class="state-card empty">
+          <div class="empty-mark">🔍</div>
+          <h3>No products found</h3>
+          <p>Try adjusting your filters or search terms.</p>
+          <button type="button" class="btn btn-primary" (click)="reset()">Clear filters</button>
+        </div>
+      } @else {
+        <div class="product-grid">
+          @for (p of items(); track p.id) {
+            <app-product-card [product]="p" />
+          }
+        </div>
+
+        @if (totalPages() > 1) {
+          <nav class="pager">
+            <button type="button" class="page-btn" [disabled]="page() <= 1" (click)="goToPage(page() - 1)" aria-label="Previous">‹</button>
+            @for (pg of pages(); track pg) {
+              <button type="button" class="page-btn" [class.current]="pg === page()" (click)="goToPage(pg)">{{ pg }}</button>
+            }
+            <button type="button" class="page-btn" [disabled]="page() >= totalPages()" (click)="goToPage(page() + 1)" aria-label="Next">›</button>
+          </nav>
+        }
+      }
+    </section>
+  </div>
+</main>

@@ -63,6 +63,31 @@ public sealed class ProductsTests : IClassFixture<PostgresApiFactory>
         Assert.DoesNotContain(result!.Items, p => p.Id == created.Id);
     }
 
+    [Fact]
+    public async Task List_FilterByCategory_ReturnsOnlyThatCategory()
+    {
+        // Admin creates one product in each of two categories.
+        var admin = _factory.CreateClient();
+        await AuthenticateAsAdminAsync(admin);
+        var slug = Unique("cat");
+        (await admin.PostAsJsonAsync("/api/products", new
+        {
+            name = $"{slug}-audio", slug = $"{slug}-a", sku = $"{slug}-a", category = "Audio", price = 5m,
+        })).EnsureSuccessStatusCode();
+        (await admin.PostAsJsonAsync("/api/products", new
+        {
+            name = $"{slug}-laptop", slug = $"{slug}-l", sku = $"{slug}-l", category = "Laptops", price = 5m,
+        })).EnsureSuccessStatusCode();
+
+        // Anonymous filters by category — every result must match, and the seeded Laptops are present.
+        var anon = _factory.CreateClient();
+        var result = await anon.GetFromJsonAsync<PagedResult>("/api/products?category=Laptops&pageSize=50");
+
+        Assert.NotNull(result);
+        Assert.NotEmpty(result!.Items);
+        Assert.All(result.Items, p => Assert.Equal("Laptops", p.Category));
+    }
+
     // --- List: pagination / filtering / sorting ---
 
     [Fact]

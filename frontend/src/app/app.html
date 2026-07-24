@@ -16,9 +16,8 @@
           <span class="mark">{{ brandInitial() }}</span>{{ settings.siteName() }}
         </a>
 
-        <!-- Search is part of the header design; wiring lands with the catalog page. -->
-        <form class="store-search" (submit)="$event.preventDefault()" role="search" aria-label="Search products">
-          <input type="search" placeholder="Search for products, brands…" aria-label="Search for products" />
+        <form class="store-search" (submit)="$event.preventDefault(); search(q.value)" role="search" aria-label="Search products">
+          <input #q type="search" placeholder="Search for products, brands…" aria-label="Search for products" />
           <button type="submit" aria-label="Search">⌕</button>
         </form>
 
@@ -37,10 +36,10 @@
         </div>
       </div>
 
-      <!-- Category nav from the fixed catalog categories; links activate with the catalog page. -->
       <nav class="wrap store-cats" aria-label="Product categories">
+        <a routerLink="/products">All</a>
         @for (c of categories; track c) {
-          <span>{{ c }}</span>
+          <a routerLink="/products" [queryParams]="{ category: c }">{{ c }}</a>
         }
       </nav>
     </header>

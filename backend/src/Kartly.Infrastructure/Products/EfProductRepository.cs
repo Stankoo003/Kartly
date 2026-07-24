@@ -23,6 +23,9 @@ public sealed class EfProductRepository(KartlyDbContext context) : IProductRepos
         if (!string.IsNullOrWhiteSpace(query.Brand))
             products = products.Where(p => p.Brand == query.Brand);
 
+        if (!string.IsNullOrWhiteSpace(query.Category))
+            products = products.Where(p => p.Category == query.Category);
+
         if (query.MinPrice is { } min)
             products = products.Where(p => p.Price >= min);
 
