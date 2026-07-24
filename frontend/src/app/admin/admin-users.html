@@ -1,9 +1,5 @@
 <main class="screen">
   <header class="screen-head">
-    <div>
-      <h2>Users</h2>
-      <p class="text-muted count">{{ total() }} total</p>
-    </div>
     <form class="search" (submit)="$event.preventDefault(); applySearch()">
       <input class="input" name="search" [(ngModel)]="search" placeholder="Search by email…" />
       <button uiButton variant="secondary" type="submit">Search</button>
@@ -66,15 +62,7 @@
       </table>
     </div>
 
-    <nav class="pager">
-      <button uiButton variant="secondary" size="sm" [disabled]="page() <= 1" (click)="goToPage(page() - 1)">
-        Prev
-      </button>
-      <span class="text-muted">Page {{ page() }} / {{ totalPages() }}</span>
-      <button uiButton variant="secondary" size="sm" [disabled]="page() >= totalPages()" (click)="goToPage(page() + 1)">
-        Next
-      </button>
-    </nav>
+    <ui-pager [page]="page()" [pageSize]="pageSize" [total]="total()" (pageChange)="goToPage($event)" />
   }
 </main>
 

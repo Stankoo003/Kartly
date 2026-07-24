@@ -6,13 +6,14 @@ import { UserService } from '../users/user.service';
 import { AppUser, USER_ROLES } from '../users/user.models';
 import { UiButton } from '../ui/ui-button';
 import { UiDialog } from '../ui/ui-dialog';
+import { UiPager } from '../ui/ui-pager';
 
 type DialogMode = 'role' | 'deactivate' | 'details' | null;
 
 /** Admin-only users screen: paginated + searchable list, role changes and activate/deactivate. */
 @Component({
   selector: 'app-admin-users',
-  imports: [FormsModule, UiButton, UiDialog],
+  imports: [FormsModule, UiButton, UiDialog, UiPager],
   templateUrl: './admin-users.html',
   styleUrl: './admin-users.scss',
 })

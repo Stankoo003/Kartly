@@ -1,0 +1,74 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   Admin theme — dashboard look, scoped to the admin subtree only.
+
+   The storefront keeps the warm "Organic" palette from src/styles.scss. Here we
+   re-point the same custom properties on .admin-shell, so every shared class
+   (.card, .input, .btn, .table, .tag, .dialog) picks up the back-office look
+   without being forked. ui-dialog renders in place, so dialogs inherit too.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.admin-shell {
+  /* shell-only colours */
+  --admin-sidebar: #2b2f5b;
+  --admin-sidebar-active: #4a4f8c;
+  --admin-sidebar-text: #d8dbf0;
+  --admin-logout: #f2545b;
+  --admin-muted: #a3aed0;
+
+  /* Organic tokens, re-pointed */
+  --color-bg: #f4f7fe;
+  --color-surface: #ffffff;
+  --color-text: #1b2559;
+  --color-accent: #4318ff;
+  --color-accent-600: #3311cc;
+  --color-accent-700: #2a0ea6;
+  --color-divider: #e0e5f2;
+  --color-danger: #e31a1a;
+
+  --font-heading: var(--font-body);
+  --font-heading-weight: 700;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+
+  --shadow-sm: 0 2px 8px rgba(112, 144, 176, 0.12);
+  --shadow-md: 0 6px 18px rgba(112, 144, 176, 0.16);
+  --shadow-lg: 0 18px 40px rgba(112, 144, 176, 0.24);
+
+  color: var(--color-text);
+  background: var(--color-bg);
+
+  /* — shape overrides: the storefront's pill inputs/buttons read as too soft here — */
+  .input {
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    border-color: var(--color-divider);
+  }
+  .btn { border-radius: var(--radius-md); letter-spacing: 0; }
+  .btn-secondary { background: var(--color-surface); }
+  .card { border-radius: var(--radius-lg); border: 1px solid var(--color-divider); }
+
+  .table th {
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--admin-muted);
+    padding: var(--space-3) var(--space-2);
+  }
+  .table td { padding: var(--space-3) var(--space-2); }
+  .table tbody tr:last-child td { border-bottom: 0; }
+  .table tbody tr:hover { background: #f7f9ff; }
+
+  /* — status pills, pastel like the reference — */
+  .tag {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 12px;
+  }
+  .tag-accent { background: #eee9ff; color: #4318ff; }
+  .tag-accent-2 { background: #e6faf5; color: #01b574; }
+  .tag-neutral { background: #f4f7fe; color: #707eae; }
+  .tag-danger { background: #ffeaea; color: #e31a1a; }
+}
