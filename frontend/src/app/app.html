@@ -1,23 +1,79 @@
-<nav class="nav elev-sm">
-  <a class="nav-brand" routerLink="/">{{ settings.siteName() }}</a>
-  <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
-  @if (auth.isAdmin()) {
-    <a routerLink="/admin" routerLinkActive="active">Admin</a>
-  }
-  <span class="spacer"></span>
-  @if (auth.isAuthenticated()) {
-    <span class="text-muted who">{{ auth.email() }} ({{ auth.role() }})</span>
-    <button uiButton variant="ghost" size="sm" type="button" (click)="logout()">Sign out</button>
-  } @else {
-    <a routerLink="/login">Sign in</a>
-  }
-</nav>
+<div [class.store-shell]="!isAdminArea()">
+  @if (!isAdminArea()) {
+    <!-- Announcement bar (static marketing copy) -->
+    <div class="announce">
+      <div class="wrap">
+        <span>Free shipping over $75 · 30-day returns</span>
+        <div class="trust store-announce-hide">
+          <span>Trusted shipping</span><span class="dot">·</span><span>Secure checkout</span>
+        </div>
+      </div>
+    </div>
 
-<router-outlet />
+    <header class="store-header">
+      <div class="wrap bar">
+        <a class="store-brand" routerLink="/">
+          <span class="mark">{{ brandInitial() }}</span>{{ settings.siteName() }}
+        </a>
 
-<footer class="site-footer">
-  <span class="text-muted">© {{ settings.siteName() }}</span>
-  @if (settings.contactEmail()) {
-    <a [href]="'mailto:' + settings.contactEmail()">{{ settings.contactEmail() }}</a>
+        <!-- Search is part of the header design; wiring lands with the catalog page. -->
+        <form class="store-search" (submit)="$event.preventDefault()" role="search" aria-label="Search products">
+          <input type="search" placeholder="Search for products, brands…" aria-label="Search for products" />
+          <button type="submit" aria-label="Search">⌕</button>
+        </form>
+
+        <div class="store-actions">
+          @if (auth.isAuthenticated()) {
+            <span class="who">{{ auth.email() }}</span>
+            @if (auth.isAdmin()) {
+              <a routerLink="/admin">Admin</a>
+            }
+            <a href="#" (click)="$event.preventDefault(); logout()">Sign out</a>
+          } @else {
+            <a routerLink="/login">Sign in</a>
+          }
+          <!-- Cart lands with the cart phase. -->
+          <span class="cart" aria-label="Cart (coming soon)">🛒 Cart</span>
+        </div>
+      </div>
+
+      <!-- Category nav from the fixed catalog categories; links activate with the catalog page. -->
+      <nav class="wrap store-cats" aria-label="Product categories">
+        @for (c of categories; track c) {
+          <span>{{ c }}</span>
+        }
+      </nav>
+    </header>
   }
-</footer>
+
+  <router-outlet />
+
+  @if (!isAdminArea()) {
+    <footer class="store-footer">
+      <div class="wrap cols">
+        <div>
+          <div class="brand">{{ settings.siteName() }}</div>
+          <p class="blurb">Everything you love, in one cart. Curated products, fast delivery, free returns.</p>
+        </div>
+        <div>
+          <h4>Shop</h4>
+          <div class="links"><span>New arrivals</span><span>Best sellers</span><span>Deals</span></div>
+        </div>
+        <div>
+          <h4>Support</h4>
+          <div class="links">
+            @if (settings.contactEmail()) {
+              <a [href]="'mailto:' + settings.contactEmail()">Contact us</a>
+            }
+            <span>Shipping</span><span>Returns</span>
+          </div>
+        </div>
+        <div>
+          <h4>Company</h4>
+          <div class="links"><span>About</span><span>Careers</span><span>Become a supplier</span></div>
+        </div>
+      </div>
+      <div class="base">© 2026 {{ settings.siteName() }} · Public storefront</div>
+    </footer>
+  }
+</div>
