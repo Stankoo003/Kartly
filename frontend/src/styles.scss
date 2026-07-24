@@ -1,3 +1,8 @@
+/* The admin theme re-points these tokens inside .admin-shell. It has to be global
+   (not a component stylesheet) so it reaches the shared classes rendered by the
+   admin screens, which Angular's emulated encapsulation would otherwise scope out. */
+@use './app/admin/admin-theme';
+
 /* ══════════════════════════════════════════════════════════════════════════
    Organic — design-system tokens and component classes.
    Ported from the claude.ai/design "Organic" project (styles.css).

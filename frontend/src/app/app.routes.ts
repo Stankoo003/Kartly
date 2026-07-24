@@ -17,9 +17,10 @@ export const routes: Routes = [
     canActivateChild: [adminGuard],
     children: [
       { path: '', redirectTo: 'products', pathMatch: 'full' },
-      { path: 'products', component: AdminProducts },
-      { path: 'users', component: AdminUsers },
-      { path: 'settings', component: AdminSettings },
+      // `title` feeds the admin topbar heading (see AdminLayout.pageTitle).
+      { path: 'products', component: AdminProducts, data: { title: 'Products' } },
+      { path: 'users', component: AdminUsers, data: { title: 'Users' } },
+      { path: 'settings', component: AdminSettings, data: { title: 'Settings' } },
     ],
   },
   { path: '**', redirectTo: '' },

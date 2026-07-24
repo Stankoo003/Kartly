@@ -1,23 +1,24 @@
-<nav class="nav elev-sm">
-  <a class="nav-brand" routerLink="/">{{ settings.siteName() }}</a>
-  <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
-  @if (auth.isAdmin()) {
-    <a routerLink="/admin" routerLinkActive="active">Admin</a>
-  }
-  <span class="spacer"></span>
-  @if (auth.isAuthenticated()) {
-    <span class="text-muted who">{{ auth.email() }} ({{ auth.role() }})</span>
-    <button uiButton variant="ghost" size="sm" type="button" (click)="logout()">Sign out</button>
-  } @else {
-    <a routerLink="/login">Sign in</a>
-  }
-</nav>
+@if (!isAdminArea()) {
+  <nav class="nav elev-sm">
+    <a class="nav-brand" routerLink="/">{{ settings.siteName() }}</a>
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
+    <span class="spacer"></span>
+    @if (auth.isAuthenticated()) {
+      <span class="text-muted who">{{ auth.email() }} ({{ auth.role() }})</span>
+      <button uiButton variant="ghost" size="sm" type="button" (click)="logout()">Sign out</button>
+    } @else {
+      <a routerLink="/login">Sign in</a>
+    }
+  </nav>
+}
 
 <router-outlet />
 
-<footer class="site-footer">
-  <span class="text-muted">© {{ settings.siteName() }}</span>
-  @if (settings.contactEmail()) {
-    <a [href]="'mailto:' + settings.contactEmail()">{{ settings.contactEmail() }}</a>
-  }
-</footer>
+@if (!isAdminArea()) {
+  <footer class="site-footer">
+    <span class="text-muted">© {{ settings.siteName() }}</span>
+    @if (settings.contactEmail()) {
+      <a [href]="'mailto:' + settings.contactEmail()">{{ settings.contactEmail() }}</a>
+    }
+  </footer>
+}
