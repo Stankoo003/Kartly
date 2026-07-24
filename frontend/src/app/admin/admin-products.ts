@@ -12,6 +12,7 @@ import {
 } from '../products/product.models';
 import { UiButton } from '../ui/ui-button';
 import { UiDialog } from '../ui/ui-dialog';
+import { UiPager } from '../ui/ui-pager';
 
 type DialogMode = 'create' | 'edit' | 'delete' | null;
 type StatusFilter = 'active' | 'inactive' | 'all';
@@ -57,7 +58,7 @@ const emptyForm = (): FormModel => ({
 /** Admin-only products screen: paginated list + create/edit/delete against the live API. */
 @Component({
   selector: 'app-admin-products',
-  imports: [CurrencyPipe, FormsModule, UiButton, UiDialog],
+  imports: [CurrencyPipe, FormsModule, UiButton, UiDialog, UiPager],
   templateUrl: './admin-products.html',
   styleUrl: './admin-products.scss',
 })
