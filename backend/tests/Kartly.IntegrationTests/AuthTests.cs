@@ -77,7 +77,7 @@ public sealed class AuthTests : IClassFixture<PostgresApiFactory>
     public async Task AdminOnlyEndpoint_WithCustomerToken_Returns403()
     {
         var client = _factory.CreateClient();
-        var token = await RegisterAsync(client, role: "Customer");
+        var token = await RegisterAsync(client);
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         var response = await client.PostAsJsonAsync("/api/products", new { name = "Widget", price = 9.99m });
@@ -107,6 +107,40 @@ public sealed class AuthTests : IClassFixture<PostgresApiFactory>
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
 
+    // --- Criterion: public registration cannot grant Admin (privilege-escalation guard) ---
+
+    [Fact]
+    public async Task Register_IgnoresRoleInBody_AndAlwaysCreatesCustomer()
+    {
+        var client = _factory.CreateClient();
+        var email = $"escalate-{Guid.NewGuid():N}@kartly.local";
+
+        // An anonymous caller asking for Admin. The field no longer binds; it must be ignored.
+        var response = await client.PostAsJsonAsync("/api/auth/register", new
+        {
+            email, password = "Passw0rd!", role = "Admin",
+        });
+
+        response.EnsureSuccessStatusCode();
+        var body = await response.Content.ReadFromJsonAsync<AuthResponse>();
+        Assert.Equal("Customer", body!.Role);
+
+        // The claim in the issued token must match — not just the response body.
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", body.Token);
+        var adminOnly = await client.PostAsJsonAsync("/api/products", new
+        {
+            name = "Escalation probe", category = "Accessories", price = 1m,
+        });
+        Assert.Equal(HttpStatusCode.Forbidden, adminOnly.StatusCode);
+
+        // And the persisted role must be Customer too.
+        using var scope = _factory.Services.CreateScope();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+        var user = await userManager.FindByEmailAsync(email);
+        Assert.NotNull(user);
+        Assert.Equal(["Customer"], await userManager.GetRolesAsync(user!));
+    }
+
     // --- Criterion: Passwords are hashed, never stored in plaintext ---
 
     [Fact]
@@ -115,7 +149,7 @@ public sealed class AuthTests : IClassFixture<PostgresApiFactory>
         var client = _factory.CreateClient();
         const string password = "Sup3rSecret!";
         var email = $"hash-check-{Guid.NewGuid():N}@kartly.local";
-        await RegisterAsync(client, role: "Customer", email: email, password: password);
+        await RegisterAsync(client, email: email, password: password);
 
         using var scope = _factory.Services.CreateScope();
         var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
@@ -146,11 +180,12 @@ public sealed class AuthTests : IClassFixture<PostgresApiFactory>
 
     // --- helpers ---
 
+    /// <summary>Registers a user. Registration always yields a Customer; role is admin-assigned.</summary>
     private static async Task<string> RegisterAsync(
-        HttpClient client, string role, string? email = null, string password = "Passw0rd!")
+        HttpClient client, string? email = null, string password = "Passw0rd!")
     {
         email ??= $"user-{Guid.NewGuid():N}@kartly.local";
-        var response = await client.PostAsJsonAsync("/api/auth/register", new { email, password, role });
+        var response = await client.PostAsJsonAsync("/api/auth/register", new { email, password });
         response.EnsureSuccessStatusCode();
         var body = await response.Content.ReadFromJsonAsync<AuthResponse>();
         return body!.Token;

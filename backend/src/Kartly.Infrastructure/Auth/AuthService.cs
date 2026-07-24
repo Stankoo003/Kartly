@@ -14,8 +14,6 @@ public sealed class AuthService(
 {
     public async Task<AuthResult> RegisterAsync(RegisterRequest request, CancellationToken ct = default)
     {
-        var role = NormalizeRole(request.Role);
-
         if (await userManager.FindByEmailAsync(request.Email) is not null)
             throw new AuthException("A user with this email already exists.");
 
@@ -24,8 +22,9 @@ public sealed class AuthService(
         if (!created.Succeeded)
             throw new AuthException(string.Join(" ", created.Errors.Select(e => e.Description)));
 
-        await userManager.AddToRoleAsync(user, role);
-        return tokenService.CreateToken(user, role);
+        // Public registration always creates a Customer; the role is never taken from the request.
+        await userManager.AddToRoleAsync(user, Roles.Customer);
+        return tokenService.CreateToken(user, Roles.Customer);
     }
 
     public async Task<AuthResult> LoginAsync(LoginRequest request, CancellationToken ct = default)
@@ -39,14 +38,5 @@ public sealed class AuthService(
 
         var role = (await userManager.GetRolesAsync(user)).FirstOrDefault() ?? Roles.Customer;
         return tokenService.CreateToken(user, role);
-    }
-
-    private static string NormalizeRole(string? role)
-    {
-        if (string.IsNullOrWhiteSpace(role))
-            return Roles.Customer;
-
-        var match = Roles.All.FirstOrDefault(r => string.Equals(r, role, StringComparison.OrdinalIgnoreCase));
-        return match ?? throw new AuthException($"Unknown role '{role}'.");
     }
 }

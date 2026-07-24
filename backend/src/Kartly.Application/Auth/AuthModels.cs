@@ -1,7 +1,10 @@
 namespace Kartly.Application.Auth;
 
-/// <summary>Credentials for registration. Role defaults to Customer if omitted.</summary>
-public sealed record RegisterRequest(string Email, string Password, string? Role = null);
+/// <summary>
+/// Credentials for registration. Deliberately carries no role: public registration always
+/// creates a Customer. Role assignment is admin-only (PUT /api/admin/users/{id}/role).
+/// </summary>
+public sealed record RegisterRequest(string Email, string Password);
 
 /// <summary>Credentials for login.</summary>
 public sealed record LoginRequest(string Email, string Password);

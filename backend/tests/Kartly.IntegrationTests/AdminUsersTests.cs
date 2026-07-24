@@ -40,7 +40,7 @@ public sealed class AdminUsersTests : IClassFixture<PostgresApiFactory>
     public async Task List_AsCustomer_Returns403()
     {
         var client = _factory.CreateClient();
-        await RegisterAndAuthenticateAsync(client, role: "Customer");
+        await RegisterAndAuthenticateAsync(client);
 
         var response = await client.GetAsync("/api/admin/users");
 
@@ -62,7 +62,7 @@ public sealed class AdminUsersTests : IClassFixture<PostgresApiFactory>
     {
         var client = _factory.CreateClient();
         var email = UniqueEmail("search");
-        await RegisterAsync(client, email, role: "Customer");
+        await RegisterAsync(client, email);
         await AuthenticateAsAdminAsync(client);
 
         var result = await client.GetFromJsonAsync<PagedUsers>($"/api/admin/users?search={email}&pageSize=50");
@@ -96,7 +96,7 @@ public sealed class AdminUsersTests : IClassFixture<PostgresApiFactory>
         // A customer with their own long-lived token.
         var customer = _factory.CreateClient();
         var email = UniqueEmail("promote");
-        var token = await RegisterAsync(customer, email, role: "Customer");
+        var token = await RegisterAsync(customer, email);
         customer.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         // Admin-only create is refused while they're a Customer.
@@ -119,10 +119,14 @@ public sealed class AdminUsersTests : IClassFixture<PostgresApiFactory>
         var admin = _factory.CreateClient();
         await AuthenticateAsAdminAsync(admin);
 
+        // Registration only ever yields a Customer, so promote through the admin endpoint first.
         var email = UniqueEmail("secondadmin");
-        await RegisterAsync(admin, email, role: "Admin"); // registration carries no auth; fine
+        await RegisterAsync(admin, email);
         var id = await GetUserIdByEmailAsync(admin, email);
+        Assert.Equal(HttpStatusCode.OK,
+            (await admin.PutAsJsonAsync($"/api/admin/users/{id}/role", new { role = "Admin" })).StatusCode);
 
+        // With two admins present, demoting the other one is allowed.
         var response = await admin.PutAsJsonAsync($"/api/admin/users/{id}/role", new { role = "Customer" });
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -178,7 +182,7 @@ public sealed class AdminUsersTests : IClassFixture<PostgresApiFactory>
         var customer = _factory.CreateClient();
         var email = UniqueEmail("deact");
         var password = "Passw0rd!";
-        var token = await RegisterAsync(customer, email, password, "Customer");
+        var token = await RegisterAsync(customer, email, password);
         customer.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         // Works while active.
@@ -217,9 +221,9 @@ public sealed class AdminUsersTests : IClassFixture<PostgresApiFactory>
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
     }
 
-    private async Task RegisterAndAuthenticateAsync(HttpClient client, string role)
+    private async Task RegisterAndAuthenticateAsync(HttpClient client)
     {
-        var token = await RegisterAsync(client, UniqueEmail("user"), role: role);
+        var token = await RegisterAsync(client, UniqueEmail("user"));
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
     }
 
@@ -230,10 +234,11 @@ public sealed class AdminUsersTests : IClassFixture<PostgresApiFactory>
         return user.Id;
     }
 
+    /// <summary>Registers a user. Registration always yields a Customer; promote via the admin endpoint.</summary>
     private static async Task<string> RegisterAsync(
-        HttpClient client, string email, string password = "Passw0rd!", string? role = null)
+        HttpClient client, string email, string password = "Passw0rd!")
     {
-        var response = await client.PostAsJsonAsync("/api/auth/register", new { email, password, role });
+        var response = await client.PostAsJsonAsync("/api/auth/register", new { email, password });
         response.EnsureSuccessStatusCode();
         var body = await response.Content.ReadFromJsonAsync<AuthResponse>();
         return body!.Token;
