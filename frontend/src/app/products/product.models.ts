@@ -47,6 +47,7 @@ export type ProductSortBy = 'CreatedAt' | 'Name' | 'Price';
 export interface ProductQuery {
   search?: string;
   brand?: string;
+  category?: string;
   isFeatured?: boolean;
   isActive?: boolean;
   minPrice?: number;

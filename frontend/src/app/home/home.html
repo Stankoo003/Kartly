@@ -5,7 +5,7 @@
       <span class="hero-badge">New season · up to 40% off</span>
       <h1>{{ settings.bannerTitle() }}</h1>
       <p class="hero-sub">{{ settings.bannerSubtitle() }}</p>
-      <button type="button" class="btn btn-primary hero-cta">Shop all products →</button>
+      <a class="btn btn-primary hero-cta" routerLink="/products">Shop all products →</a>
     </div>
   </section>
 
@@ -13,13 +13,14 @@
   <section class="section">
     <div class="section-head">
       <h2>Shop by category</h2>
+      <a class="section-more" routerLink="/products">View all →</a>
     </div>
     <div class="cat-grid">
       @for (c of categories; track c) {
-        <div class="cat-tile">
+        <a class="cat-tile" routerLink="/products" [queryParams]="{ category: c }">
           <div class="cat-thumb">{{ c }}</div>
           <div class="cat-name">{{ c }}</div>
-        </div>
+        </a>
       }
     </div>
   </section>
@@ -30,30 +31,7 @@
       <div class="section-head"><h2>Featured products</h2></div>
       <div class="product-grid">
         @for (p of featured(); track p.id) {
-          <article class="product-card">
-            <div class="product-media">
-              @if (p.imageUrl) {
-                <img [src]="p.imageUrl" [alt]="p.name" />
-              } @else {
-                <span class="product-media-empty">{{ p.name }}</span>
-              }
-              @if (p.isFeatured) { <span class="badge">Featured</span> }
-            </div>
-            <div class="product-body">
-              @if (p.brand) { <span class="product-brand">{{ p.brand }}</span> }
-              <span class="product-name">{{ p.name }}</span>
-              <div class="product-price">
-                <span class="now">{{ p.price | currency: settings.currency() }}</span>
-                @if (p.discountPrice) {
-                  <span class="was">{{ p.discountPrice | currency: settings.currency() }}</span>
-                }
-              </div>
-              <span class="product-stock">{{ stockLabel(p) }}</span>
-              <button type="button" class="btn btn-primary product-add" [disabled]="p.stockQuantity <= 0">
-                {{ p.stockQuantity <= 0 ? 'Out of stock' : 'Add to cart' }}
-              </button>
-            </div>
-          </article>
+          <app-product-card [product]="p" />
         }
       </div>
     </section>
@@ -62,32 +40,13 @@
   <!-- NEW ARRIVALS -->
   @if (recent().length) {
     <section class="section">
-      <div class="section-head"><h2>New arrivals</h2></div>
+      <div class="section-head">
+        <h2>New arrivals</h2>
+        <a class="section-more" routerLink="/products" [queryParams]="{ sort: 'newest' }">View all →</a>
+      </div>
       <div class="product-grid">
         @for (p of recent(); track p.id) {
-          <article class="product-card">
-            <div class="product-media">
-              @if (p.imageUrl) {
-                <img [src]="p.imageUrl" [alt]="p.name" />
-              } @else {
-                <span class="product-media-empty">{{ p.name }}</span>
-              }
-            </div>
-            <div class="product-body">
-              @if (p.brand) { <span class="product-brand">{{ p.brand }}</span> }
-              <span class="product-name">{{ p.name }}</span>
-              <div class="product-price">
-                <span class="now">{{ p.price | currency: settings.currency() }}</span>
-                @if (p.discountPrice) {
-                  <span class="was">{{ p.discountPrice | currency: settings.currency() }}</span>
-                }
-              </div>
-              <span class="product-stock">{{ stockLabel(p) }}</span>
-              <button type="button" class="btn btn-primary product-add" [disabled]="p.stockQuantity <= 0">
-                {{ p.stockQuantity <= 0 ? 'Out of stock' : 'Add to cart' }}
-              </button>
-            </div>
-          </article>
+          <app-product-card [product]="p" />
         }
       </div>
     </section>
@@ -99,6 +58,6 @@
       <div class="promo-kicker">Limited time</div>
       <h2 class="promo-title">Get up to 70% off<br />seasonal picks</h2>
     </div>
-    <button type="button" class="promo-cta">Shop the sale →</button>
+    <a class="promo-cta" routerLink="/products">Shop the sale →</a>
   </section>
 </main>

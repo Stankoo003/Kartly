@@ -33,6 +33,12 @@ export class App {
   /** First letter of the site name, for the header logo mark. */
   protected readonly brandInitial = computed(() => (this.settings.siteName() || 'C').charAt(0).toUpperCase());
 
+  /** Header search → the catalog page, filtered by the term. */
+  protected search(term: string): void {
+    const q = term.trim();
+    this.router.navigate(['/products'], { queryParams: q ? { search: q } : {} });
+  }
+
   protected logout(): void {
     this.auth.logout();
     this.router.navigate(['/login']);
