@@ -379,7 +379,7 @@ public sealed class ProductsTests : IClassFixture<PostgresApiFactory>
 
     private async Task AuthenticateAsCustomerAsync(HttpClient client)
     {
-        var token = await RegisterAsync(client, "Customer");
+        var token = await RegisterAsync(client);
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
     }
 
@@ -394,10 +394,11 @@ public sealed class ProductsTests : IClassFixture<PostgresApiFactory>
         return (await response.Content.ReadFromJsonAsync<ProductResponse>())!;
     }
 
-    private static async Task<string> RegisterAsync(HttpClient client, string role)
+    /// <summary>Registers a user. Registration always yields a Customer; role is admin-assigned.</summary>
+    private static async Task<string> RegisterAsync(HttpClient client)
     {
         var email = $"user-{Guid.NewGuid():N}@kartly.local";
-        var response = await client.PostAsJsonAsync("/api/auth/register", new { email, password = "Passw0rd!", role });
+        var response = await client.PostAsJsonAsync("/api/auth/register", new { email, password = "Passw0rd!" });
         response.EnsureSuccessStatusCode();
         var body = await response.Content.ReadFromJsonAsync<AuthResponse>();
         return body!.Token;
