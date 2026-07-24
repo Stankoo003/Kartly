@@ -7,10 +7,12 @@ public sealed record SiteSettingsResponse(
     string SiteName,
     string ContactEmail,
     string Currency,
+    string BannerTitle,
+    string BannerSubtitle,
     DateTime UpdatedAt)
 {
     public static SiteSettingsResponse FromEntity(SiteSettings s) =>
-        new(s.SiteName, s.ContactEmail, s.Currency, s.UpdatedAt);
+        new(s.SiteName, s.ContactEmail, s.Currency, s.BannerTitle, s.BannerSubtitle, s.UpdatedAt);
 }
 
 /// <summary>Full-replace payload for the settings record. Admin only.</summary>
@@ -26,7 +28,15 @@ public sealed record UpdateSiteSettingsRequest(
 
     [Required]
     [MaxLength(3)]
-    string Currency) : IValidatableObject
+    string Currency,
+
+    [Required]
+    [MaxLength(100)]
+    string BannerTitle,
+
+    [Required]
+    [MaxLength(200)]
+    string BannerSubtitle) : IValidatableObject
 {
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {

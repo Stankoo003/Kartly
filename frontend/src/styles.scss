@@ -1,3 +1,8 @@
+/* The Cartly storefront theme, scoped to .store-shell (added by App on non-admin
+   routes). Imported here (global) so it can restyle the shared .card/.input/.btn
+   classes on the home and login components, which component-scoped styles couldn't. */
+@use './app/store-theme';
+
 /* ══════════════════════════════════════════════════════════════════════════
    Organic — design-system tokens and component classes.
    Ported from the claude.ai/design "Organic" project (styles.css).

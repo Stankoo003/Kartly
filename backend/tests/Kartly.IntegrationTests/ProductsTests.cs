@@ -30,6 +30,39 @@ public sealed class ProductsTests : IClassFixture<PostgresApiFactory>
 
     private const string ValidCategory = "Accessories";
 
+    // --- List: public access ---
+
+    [Fact]
+    public async Task List_IsAnonymous_ReturnsSeededProducts()
+    {
+        var client = _factory.CreateClient(); // no token — the public storefront
+
+        var response = await client.GetAsync("/api/products?pageSize=50");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var result = await response.Content.ReadFromJsonAsync<PagedResult>();
+        Assert.NotNull(result);
+        Assert.True(result!.TotalCount >= 7);
+    }
+
+    [Fact]
+    public async Task List_Anonymous_CannotSeeInactiveProducts()
+    {
+        // Admin creates then soft-deletes a product.
+        var admin = _factory.CreateClient();
+        var created = await CreateProductAsync(admin, Unique("hidden"));
+        Assert.Equal(HttpStatusCode.NoContent,
+            (await admin.DeleteAsync($"/api/products/{created.Id}")).StatusCode);
+
+        // Anonymous asking for inactive rows is ignored — the active-only clamp holds.
+        var anon = _factory.CreateClient();
+        var result = await anon.GetFromJsonAsync<PagedResult>(
+            $"/api/products?search={created.Slug}&isActive=false&pageSize=50");
+
+        Assert.NotNull(result);
+        Assert.DoesNotContain(result!.Items, p => p.Id == created.Id);
+    }
+
     // --- List: pagination / filtering / sorting ---
 
     [Fact]
