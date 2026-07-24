@@ -1,0 +1,89 @@
+<main class="detail wrap">
+  @switch (status()) {
+    @case ('loading') {
+      <div class="detail-grid">
+        <div class="skeleton-media"></div>
+        <div class="detail-info">
+          <div class="sk-line w30"></div>
+          <div class="sk-line w80 tall"></div>
+          <div class="sk-line w40 tall"></div>
+          <div class="sk-line w100"></div>
+          <div class="sk-line w90"></div>
+        </div>
+      </div>
+    }
+
+    @case ('not-found') {
+      <div class="state-card">
+        <div class="big-404">404</div>
+        <h2>Product not found</h2>
+        <p>This product may have been removed or the link is incorrect.</p>
+        <a class="btn btn-primary" routerLink="/products">Browse catalog</a>
+      </div>
+    }
+
+    @case ('error') {
+      <div class="state-card">
+        <h2>Something went wrong</h2>
+        <p>We couldn’t load this product. Please try again.</p>
+        <button type="button" class="btn btn-primary" (click)="retry()">Retry</button>
+      </div>
+    }
+
+    @case ('loaded') {
+      @if (product(); as p) {
+        <nav class="crumbs">
+          <a routerLink="/">Home</a> / <a routerLink="/products">Catalog</a> / <span>{{ p.name }}</span>
+        </nav>
+
+        <div class="detail-grid">
+          <div class="detail-media">
+            @if (p.imageUrl) {
+              <img [src]="p.imageUrl" [alt]="p.name" />
+            } @else {
+              <span class="detail-media-empty">{{ p.name }}</span>
+            }
+            @if (p.isFeatured) { <span class="badge">Featured</span> }
+          </div>
+
+          <div class="detail-info">
+            @if (p.brand) { <div class="brand">{{ p.brand }}</div> }
+            <h1>{{ p.name }}</h1>
+
+            <div class="price">
+              <span class="now">{{ p.price | currency: settings.currency() }}</span>
+              @if (p.discountPrice) {
+                <span class="was">{{ p.discountPrice | currency: settings.currency() }}</span>
+              }
+            </div>
+
+            <div class="stock">
+              <span class="stock-badge" [class.oos]="outOfStock()">{{ stockLabel() }}</span>
+            </div>
+
+            @if (p.description) {
+              <p class="description">{{ p.description }}</p>
+            }
+
+            <div class="actions">
+              <button type="button" class="btn btn-primary add" [disabled]="outOfStock()">
+                {{ outOfStock() ? 'Out of stock' : 'Add to cart' }}
+              </button>
+            </div>
+            <p class="ship-note">Free delivery Tue–Thu · 30-day free returns</p>
+
+            <dl class="specs">
+              <div class="spec"><dt>SKU</dt><dd>{{ p.sku }}</dd></div>
+              <div class="spec"><dt>Category</dt><dd>{{ p.category }}</dd></div>
+              @if (p.brand) { <div class="spec"><dt>Brand</dt><dd>{{ p.brand }}</dd></div> }
+              @if (p.model) { <div class="spec"><dt>Model</dt><dd>{{ p.model }}</dd></div> }
+              @if (p.warrantyMonths) {
+                <div class="spec"><dt>Warranty</dt><dd>{{ p.warrantyMonths }} months</dd></div>
+              }
+            </dl>
+          </div>
+        </div>
+      }
+    }
+  }
+</main>

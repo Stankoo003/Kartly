@@ -1,5 +1,6 @@
 import { Component, computed, inject, input } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { SettingsService } from '../settings/settings.service';
 import { Product } from './product.models';
 
@@ -9,20 +10,20 @@ import { Product } from './product.models';
  */
 @Component({
   selector: 'app-product-card',
-  imports: [CurrencyPipe],
+  imports: [CurrencyPipe, RouterLink],
   template: `
     <article class="product-card">
-      <div class="product-media">
+      <a class="product-media" [routerLink]="['/products', product().slug]" [attr.aria-label]="product().name">
         @if (product().imageUrl) {
           <img [src]="product().imageUrl" [alt]="product().name" />
         } @else {
           <span class="product-media-empty">{{ product().name }}</span>
         }
         @if (product().isFeatured) { <span class="badge">Featured</span> }
-      </div>
+      </a>
       <div class="product-body">
         @if (product().brand) { <span class="product-brand">{{ product().brand }}</span> }
-        <span class="product-name">{{ product().name }}</span>
+        <a class="product-name" [routerLink]="['/products', product().slug]">{{ product().name }}</a>
         <div class="product-price">
           <span class="now">{{ product().price | currency: settings.currency() }}</span>
           @if (product().discountPrice) {
