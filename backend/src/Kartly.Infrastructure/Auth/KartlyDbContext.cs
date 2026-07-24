@@ -1,4 +1,5 @@
 using Kartly.Application.Products;
+using Kartly.Application.Settings;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,7 @@ public sealed class KartlyDbContext(DbContextOptions<KartlyDbContext> options)
     : IdentityDbContext<ApplicationUser, IdentityRole, string>(options)
 {
     public DbSet<Product> Products => Set<Product>();
+    public DbSet<SiteSettings> SiteSettings => Set<SiteSettings>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -28,9 +30,11 @@ public sealed class KartlyDbContext(DbContextOptions<KartlyDbContext> options)
             product.Property(p => p.Name).HasColumnName("name").HasMaxLength(200).IsRequired();
             product.Property(p => p.Slug).HasColumnName("slug").HasMaxLength(200).IsRequired();
             product.Property(p => p.Sku).HasColumnName("sku").HasMaxLength(200).IsRequired();
+            product.Property(p => p.Category).HasColumnName("category").HasMaxLength(100).IsRequired();
             product.Property(p => p.Brand).HasColumnName("brand").HasMaxLength(200);
             product.Property(p => p.Model).HasColumnName("model").HasMaxLength(200);
             product.Property(p => p.Description).HasColumnName("description");
+            product.Property(p => p.ImageUrl).HasColumnName("image_url").HasMaxLength(400);
 
             product.Property(p => p.Price).HasColumnName("price").HasPrecision(18, 2);
             product.Property(p => p.DiscountPrice).HasColumnName("discount_price").HasPrecision(18, 2);
@@ -46,6 +50,19 @@ public sealed class KartlyDbContext(DbContextOptions<KartlyDbContext> options)
 
             product.HasIndex(p => p.Slug).IsUnique();
             product.HasIndex(p => p.Sku).IsUnique();
+        });
+
+        builder.Entity<SiteSettings>(settings =>
+        {
+            settings.ToTable("site_settings");
+
+            settings.HasKey(s => s.Id);
+            settings.Property(s => s.Id).HasColumnName("id").ValueGeneratedNever();
+
+            settings.Property(s => s.SiteName).HasColumnName("site_name").HasMaxLength(100).IsRequired();
+            settings.Property(s => s.ContactEmail).HasColumnName("contact_email").HasMaxLength(200).IsRequired();
+            settings.Property(s => s.Currency).HasColumnName("currency").HasMaxLength(3).IsRequired();
+            settings.Property(s => s.UpdatedAt).HasColumnName("updated_at");
         });
     }
 }

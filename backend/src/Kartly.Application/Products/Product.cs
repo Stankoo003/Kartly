@@ -13,9 +13,15 @@ public sealed class Product
     /// <summary>Stock-keeping unit, unique.</summary>
     public required string Sku { get; set; }
 
+    /// <summary>One of <see cref="ProductCategories.All"/>.</summary>
+    public required string Category { get; set; }
+
     public string? Brand { get; set; }
     public string? Model { get; set; }
     public string? Description { get; set; }
+
+    /// <summary>Public URL of the product image (e.g. <c>/api/media/uploads/{id}.jpg</c>), or null.</summary>
+    public string? ImageUrl { get; set; }
 
     public decimal Price { get; set; }
     public decimal? DiscountPrice { get; set; }

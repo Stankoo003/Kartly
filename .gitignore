@@ -17,6 +17,9 @@ frontend/.nx/
 npm-debug.log*
 yarn-error.log
 
+# ---------- Uploaded media (runtime) — seed images under media/seed/ ARE committed ----------
+backend/src/Kartly.Api/media/uploads/
+
 # ---------- Env / secrets ----------
 *.env
 .env.local

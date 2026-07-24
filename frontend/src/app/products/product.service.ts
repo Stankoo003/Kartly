@@ -40,4 +40,11 @@ export class ProductService {
   remove(id: string): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
+
+  /** Uploads an image (multipart) and resolves to its stored public URL. */
+  uploadImage(file: File): Observable<{ url: string }> {
+    const form = new FormData();
+    form.append('file', file);
+    return this.http.post<{ url: string }>(`${this.baseUrl}/images`, form);
+  }
 }

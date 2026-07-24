@@ -92,7 +92,7 @@ public sealed class AuthTests : IClassFixture<PostgresApiFactory>
         var token = await LoginAsync(client, KartlyDbInitializer.DefaultAdminEmail, KartlyDbInitializer.DefaultAdminPassword);
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-        var response = await client.PostAsJsonAsync("/api/products", new { name = "Widget", price = 9.99m });
+        var response = await client.PostAsJsonAsync("/api/products", new { name = "Widget", category = "Accessories", price = 9.99m });
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
     }

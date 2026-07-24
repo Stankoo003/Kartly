@@ -46,9 +46,11 @@ public sealed class ProductService(IProductRepository repository) : IProductServ
             Name = name,
             Slug = slug,
             Sku = sku,
+            Category = request.Category.Trim(),
             Brand = request.Brand?.Trim(),
             Model = request.Model?.Trim(),
             Description = request.Description?.Trim(),
+            ImageUrl = request.ImageUrl?.Trim(),
             Price = request.Price,
             DiscountPrice = request.DiscountPrice,
             StockQuantity = request.StockQuantity,
@@ -79,9 +81,11 @@ public sealed class ProductService(IProductRepository repository) : IProductServ
         product.Name = request.Name.Trim();
         product.Slug = slug;
         product.Sku = sku;
+        product.Category = request.Category.Trim();
         product.Brand = request.Brand?.Trim();
         product.Model = request.Model?.Trim();
         product.Description = request.Description?.Trim();
+        product.ImageUrl = request.ImageUrl?.Trim();
         product.Price = request.Price;
         product.DiscountPrice = request.DiscountPrice;
         product.StockQuantity = request.StockQuantity;
