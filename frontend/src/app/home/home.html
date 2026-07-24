@@ -1,0 +1,63 @@
+<main class="home wrap">
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-copy">
+      <span class="hero-badge">New season · up to 40% off</span>
+      <h1>{{ settings.bannerTitle() }}</h1>
+      <p class="hero-sub">{{ settings.bannerSubtitle() }}</p>
+      <a class="btn btn-primary hero-cta" routerLink="/products">Shop all products →</a>
+    </div>
+  </section>
+
+  <!-- CATEGORIES -->
+  <section class="section">
+    <div class="section-head">
+      <h2>Shop by category</h2>
+      <a class="section-more" routerLink="/products">View all →</a>
+    </div>
+    <div class="cat-grid">
+      @for (c of categories; track c) {
+        <a class="cat-tile" routerLink="/products" [queryParams]="{ category: c }">
+          <div class="cat-thumb">{{ c }}</div>
+          <div class="cat-name">{{ c }}</div>
+        </a>
+      }
+    </div>
+  </section>
+
+  <!-- FEATURED -->
+  @if (featured().length) {
+    <section class="section">
+      <div class="section-head"><h2>Featured products</h2></div>
+      <div class="product-grid">
+        @for (p of featured(); track p.id) {
+          <app-product-card [product]="p" />
+        }
+      </div>
+    </section>
+  }
+
+  <!-- NEW ARRIVALS -->
+  @if (recent().length) {
+    <section class="section">
+      <div class="section-head">
+        <h2>New arrivals</h2>
+        <a class="section-more" routerLink="/products" [queryParams]="{ sort: 'newest' }">View all →</a>
+      </div>
+      <div class="product-grid">
+        @for (p of recent(); track p.id) {
+          <app-product-card [product]="p" />
+        }
+      </div>
+    </section>
+  }
+
+  <!-- PROMO -->
+  <section class="promo">
+    <div>
+      <div class="promo-kicker">Limited time</div>
+      <h2 class="promo-title">Get up to 70% off<br />seasonal picks</h2>
+    </div>
+    <a class="promo-cta" routerLink="/products">Shop the sale →</a>
+  </section>
+</main>

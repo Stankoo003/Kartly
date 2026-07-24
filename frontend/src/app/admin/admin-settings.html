@@ -32,6 +32,20 @@
       <p class="hint text-muted">Used to format all product prices.</p>
     </div>
 
+    <div class="field">
+      <label>Banner title *</label>
+      <input class="input" name="bannerTitle" [(ngModel)]="form.bannerTitle" required />
+      @if (fieldErrors()['bannerTitle']; as err) { <p class="field-error">{{ err }}</p> }
+      <p class="hint text-muted">Headline in the storefront home hero.</p>
+    </div>
+
+    <div class="field">
+      <label>Banner subtitle *</label>
+      <input class="input" name="bannerSubtitle" [(ngModel)]="form.bannerSubtitle" required />
+      @if (fieldErrors()['bannerSubtitle']; as err) { <p class="field-error">{{ err }}</p> }
+      <p class="hint text-muted">Supporting line under the hero headline.</p>
+    </div>
+
     @if (formError()) {
       <p class="form-error" role="alert">{{ formError() }}</p>
     }

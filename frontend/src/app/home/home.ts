@@ -1,60 +1,35 @@
 import { Component, inject, signal } from '@angular/core';
-import { CurrencyPipe } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { RouterLink } from '@angular/router';
+import { ProductService } from '../products/product.service';
 import { SettingsService } from '../settings/settings.service';
+import { ProductCard } from '../products/product-card';
+import { PRODUCT_CATEGORIES, Product } from '../products/product.models';
 
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-}
-
-/** Public-ish landing: shows API health and the product catalog (requires a token). */
+/** Public storefront home: hero, categories, featured + recent products, promo. No auth required. */
 @Component({
   selector: 'app-home',
-  imports: [CurrencyPipe],
-  template: `
-    <main style="max-width: 480px; margin: 2rem auto; font-family: system-ui, sans-serif">
-      <h1>{{ settings.siteName() }} — products</h1>
-      <p>API health (<code>/api/health</code>): <strong>{{ health() }}</strong></p>
-      <p>The catalog requires a valid token; sign in first.</p>
-
-      @if (products().length === 0) {
-        <p>No products to show — sign in, or ask an admin to add some.</p>
-      } @else {
-        <ul>
-          @for (p of products(); track p.id) {
-            <li>{{ p.name }} — {{ p.price | currency: settings.currency() }}</li>
-          }
-        </ul>
-      }
-    </main>
-  `,
+  imports: [RouterLink, ProductCard],
+  templateUrl: './home.html',
+  styleUrl: './home.scss',
 })
 export class Home {
-  private readonly http = inject(HttpClient);
+  private readonly api = inject(ProductService);
   protected readonly settings = inject(SettingsService);
 
-  protected readonly products = signal<Product[]>([]);
-  protected readonly health = signal('checking…');
+  protected readonly categories = PRODUCT_CATEGORIES;
+
+  protected readonly featured = signal<Product[]>([]);
+  protected readonly recent = signal<Product[]>([]);
 
   constructor() {
-    this.checkHealth();
-    this.load();
-  }
-
-  private checkHealth(): void {
-    this.http.get('/api/health', { responseType: 'text' }).subscribe({
-      next: status => this.health.set(status),
-      error: () => this.health.set('unreachable'),
+    // Errors are swallowed so the page still renders (hero/categories) if the API is down.
+    this.api.list({ isFeatured: true, isActive: true, pageSize: 5 }).subscribe({
+      next: r => this.featured.set(r.items),
+      error: () => this.featured.set([]),
     });
-  }
-
-  private load(): void {
-    // 401 when unauthenticated — swallow so the page still renders.
-    this.http.get<Product[]>('/api/products').subscribe({
-      next: p => this.products.set(p),
-      error: () => this.products.set([]),
+    this.api.list({ sortBy: 'CreatedAt', sortDescending: true, isActive: true, pageSize: 5 }).subscribe({
+      next: r => this.recent.set(r.items),
+      error: () => this.recent.set([]),
     });
   }
 }

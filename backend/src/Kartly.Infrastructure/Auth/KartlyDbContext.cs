@@ -62,6 +62,8 @@ public sealed class KartlyDbContext(DbContextOptions<KartlyDbContext> options)
             settings.Property(s => s.SiteName).HasColumnName("site_name").HasMaxLength(100).IsRequired();
             settings.Property(s => s.ContactEmail).HasColumnName("contact_email").HasMaxLength(200).IsRequired();
             settings.Property(s => s.Currency).HasColumnName("currency").HasMaxLength(3).IsRequired();
+            settings.Property(s => s.BannerTitle).HasColumnName("banner_title").HasMaxLength(100).IsRequired();
+            settings.Property(s => s.BannerSubtitle).HasColumnName("banner_subtitle").HasMaxLength(200).IsRequired();
             settings.Property(s => s.UpdatedAt).HasColumnName("updated_at");
         });
     }

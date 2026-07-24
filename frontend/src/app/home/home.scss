@@ -1,0 +1,132 @@
+.home {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 44px;
+}
+
+/* ── hero ── */
+.hero {
+  border-radius: var(--store-radius-lg);
+  overflow: hidden;
+  position: relative;
+  background: var(--store-stripe);
+  min-height: 380px;
+  display: flex;
+  align-items: center;
+  padding: clamp(40px, 7vw, 72px) clamp(24px, 6vw, 72px);
+}
+.hero-copy { position: relative; max-width: 480px; }
+.hero-badge {
+  display: inline-block;
+  background: var(--store-ink);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 999px;
+  margin-bottom: 18px;
+}
+.hero h1 {
+  font-size: clamp(38px, 6vw, 64px);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  margin: 0 0 16px;
+}
+.hero-sub {
+  font-size: 16px;
+  color: var(--store-ink-soft);
+  max-width: 380px;
+  margin: 0 0 26px;
+}
+.hero-cta { padding: 16px 30px; font-size: 15.5px; }
+
+/* ── sections ── */
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 18px;
+}
+.section-head h2 { font-size: 26px; margin: 0; }
+.section-more { font-size: 14px; color: var(--store-muted); font-weight: 600; }
+.section-more:hover { color: var(--store-accent-strong); }
+
+/* ── category tiles ── */
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 14px;
+}
+.cat-tile {
+  display: block;
+  border-radius: var(--store-radius);
+  overflow: hidden;
+  background: var(--store-surface);
+  border: 1px solid var(--store-border);
+  color: inherit;
+}
+.cat-tile:hover { border-color: var(--store-accent); }
+.cat-thumb {
+  height: 120px;
+  background: var(--store-stripe);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--store-muted);
+  font-size: 12px;
+}
+.cat-name { padding: 13px 15px; font-weight: 600; font-size: 14.5px; }
+
+/* ── product grid (card itself lives in product-card.scss) ── */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 16px;
+}
+
+/* ── promo ── */
+.promo {
+  border-radius: var(--store-radius-lg);
+  background: var(--store-ink);
+  color: #fff;
+  padding: clamp(28px, 5vw, 52px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.promo-kicker {
+  font-size: 13px;
+  color: #b7f0d0;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  margin-bottom: 10px;
+}
+.promo-title {
+  font-size: clamp(28px, 4vw, 42px);
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  margin: 0;
+  color: #fff;
+}
+.promo-cta {
+  display: inline-block;
+  background: oklch(0.7 0.15 155);
+  color: #0b1f14;
+  border: none;
+  border-radius: 999px;
+  padding: 16px 32px;
+  font: inherit;
+  font-weight: 700;
+  font-size: 15.5px;
+  cursor: pointer;
+}
+.promo-cta:hover { color: #0b1f14; filter: brightness(1.05); }
+
+@media (max-width: 640px) {
+  .home { padding: 16px; gap: 34px; }
+  .hero { min-height: 300px; }
+  .product-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+}
