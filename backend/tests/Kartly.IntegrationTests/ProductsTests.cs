@@ -123,6 +123,28 @@ public sealed class ProductsTests : IClassFixture<PostgresApiFactory>
     }
 
     [Fact]
+    public async Task List_FilterBySearch_MatchesCategory()
+    {
+        // A product whose name/sku carry no "audio" — so it can only match a search for "Audio"
+        // through its Category, proving search now covers the category field.
+        var admin = _factory.CreateClient();
+        await AuthenticateAsAdminAsync(admin);
+        var slug = Unique("catsearch");
+        var create = await admin.PostAsJsonAsync("/api/products", new
+        {
+            name = slug, slug, sku = slug, category = "Audio", price = 5m, stockQuantity = 1,
+        });
+        create.EnsureSuccessStatusCode();
+        var created = await create.Content.ReadFromJsonAsync<ProductResponse>();
+
+        var anon = _factory.CreateClient();
+        var result = await anon.GetFromJsonAsync<PagedResult>("/api/products?search=Audio&pageSize=100");
+
+        Assert.NotNull(result);
+        Assert.Contains(result!.Items, p => p.Id == created!.Id);
+    }
+
+    [Fact]
     public async Task List_SortByPriceAscending_IsOrdered()
     {
         var client = _factory.CreateClient();

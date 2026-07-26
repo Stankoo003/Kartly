@@ -40,8 +40,12 @@
 
     <!-- RESULTS -->
     <section class="results">
-      <div class="results-bar">
-        <span class="results-count">{{ showingLabel() }}</span>
+      <div class="results-controls">
+        <div class="search-box">
+          <span class="search-icon" aria-hidden="true">⌕</span>
+          <input type="search" [formControl]="searchControl" placeholder="Search products…"
+                 aria-label="Search products" />
+        </div>
         <label class="results-sort">
           <span>Sort by</span>
           <select [value]="sort()" (change)="setSort($any($event.target).value)">
@@ -50,6 +54,10 @@
             }
           </select>
         </label>
+      </div>
+
+      <div class="results-bar">
+        <span class="results-count">{{ showingLabel() }}</span>
       </div>
 
       @if (error()) {
@@ -70,8 +78,13 @@
       } @else if (total() === 0) {
         <div class="state-card empty">
           <div class="empty-mark">🔍</div>
-          <h3>No products found</h3>
-          <p>Try adjusting your filters or search terms.</p>
+          @if (search()) {
+            <h3>No products match your search</h3>
+            <p>No results for “{{ search() }}”. Try a different term or clear your filters.</p>
+          } @else {
+            <h3>No products found</h3>
+            <p>Try adjusting your filters.</p>
+          }
           <button type="button" class="btn btn-primary" (click)="reset()">Clear filters</button>
         </div>
       } @else {
