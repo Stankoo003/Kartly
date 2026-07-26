@@ -1,3 +1,4 @@
+using Kartly.Application.Orders;
 using Kartly.Application.Products;
 using Kartly.Application.Settings;
 using Microsoft.AspNetCore.Identity;
@@ -15,6 +16,8 @@ public sealed class KartlyDbContext(DbContextOptions<KartlyDbContext> options)
 {
     public DbSet<Product> Products => Set<Product>();
     public DbSet<SiteSettings> SiteSettings => Set<SiteSettings>();
+    public DbSet<Order> Orders => Set<Order>();
+    public DbSet<OrderLineItem> OrderLines => Set<OrderLineItem>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -65,6 +68,47 @@ public sealed class KartlyDbContext(DbContextOptions<KartlyDbContext> options)
             settings.Property(s => s.BannerTitle).HasColumnName("banner_title").HasMaxLength(100).IsRequired();
             settings.Property(s => s.BannerSubtitle).HasColumnName("banner_subtitle").HasMaxLength(200).IsRequired();
             settings.Property(s => s.UpdatedAt).HasColumnName("updated_at");
+        });
+
+        builder.Entity<Order>(order =>
+        {
+            order.ToTable("orders");
+
+            order.HasKey(o => o.Id);
+            order.Property(o => o.Id).HasColumnName("id");
+
+            order.Property(o => o.ContactEmail).HasColumnName("contact_email").HasMaxLength(200).IsRequired();
+            order.Property(o => o.ContactPhone).HasColumnName("contact_phone").HasMaxLength(40).IsRequired();
+            order.Property(o => o.ShipFirstName).HasColumnName("ship_first_name").HasMaxLength(100).IsRequired();
+            order.Property(o => o.ShipLastName).HasColumnName("ship_last_name").HasMaxLength(100).IsRequired();
+            order.Property(o => o.ShipAddress).HasColumnName("ship_address").HasMaxLength(200).IsRequired();
+            order.Property(o => o.ShipCity).HasColumnName("ship_city").HasMaxLength(100).IsRequired();
+            order.Property(o => o.ShipZip).HasColumnName("ship_zip").HasMaxLength(20).IsRequired();
+            order.Property(o => o.ShipCountry).HasColumnName("ship_country").HasMaxLength(100).IsRequired();
+
+            order.Property(o => o.Status).HasColumnName("status").HasConversion<string>().HasMaxLength(20);
+            order.Property(o => o.Total).HasColumnName("total").HasPrecision(18, 2);
+            order.Property(o => o.CreatedAt).HasColumnName("created_at");
+            order.Property(o => o.UpdatedAt).HasColumnName("updated_at");
+
+            order.HasMany(o => o.Lines)
+                .WithOne()
+                .HasForeignKey(l => l.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<OrderLineItem>(line =>
+        {
+            line.ToTable("order_line_items");
+
+            line.HasKey(l => l.Id);
+            line.Property(l => l.Id).HasColumnName("id");
+            line.Property(l => l.OrderId).HasColumnName("order_id");
+            line.Property(l => l.ProductId).HasColumnName("product_id");
+            line.Property(l => l.ProductName).HasColumnName("product_name").HasMaxLength(200).IsRequired();
+            line.Property(l => l.UnitPrice).HasColumnName("unit_price").HasPrecision(18, 2);
+            line.Property(l => l.Quantity).HasColumnName("quantity");
+            line.Property(l => l.LineTotal).HasColumnName("line_total").HasPrecision(18, 2);
         });
     }
 }

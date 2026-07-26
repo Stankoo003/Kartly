@@ -13,6 +13,7 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
     <nav class="subnav elev-sm">
       <span class="subnav-label">Admin</span>
       <a routerLink="products" routerLinkActive="active">Products</a>
+      <a routerLink="orders" routerLinkActive="active">Orders</a>
       <a routerLink="users" routerLinkActive="active">Users</a>
       <a routerLink="settings" routerLinkActive="active">Settings</a>
     </nav>

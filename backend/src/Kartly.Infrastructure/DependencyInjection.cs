@@ -1,10 +1,12 @@
 using System.Security.Claims;
 using System.Text;
 using Kartly.Application.Auth;
+using Kartly.Application.Orders;
 using Kartly.Application.Products;
 using Kartly.Application.Settings;
 using Kartly.Application.Users;
 using Kartly.Infrastructure.Auth;
+using Kartly.Infrastructure.Orders;
 using Kartly.Infrastructure.Products;
 using Kartly.Infrastructure.Users;
 using SettingsService = Kartly.Infrastructure.Settings.SettingsService;
@@ -28,6 +30,7 @@ public static class DependencyInjection
         services.AddScoped<IProductRepository, EfProductRepository>();
         services.AddScoped<IUserAdminService, UserAdminService>();
         services.AddScoped<ISettingsService, SettingsService>();
+        services.AddScoped<IOrderService, OrderService>();
 
         AddJwtAuthentication(services, config);
 

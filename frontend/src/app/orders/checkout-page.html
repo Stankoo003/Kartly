@@ -1,0 +1,56 @@
+<main class="checkout wrap">
+  @if (cart.isEmpty()) {
+    <div class="empty-card">
+      <div class="mark">🛒</div>
+      <h3>Your cart is empty</h3>
+      <p>Add some products before checking out.</p>
+      <a class="btn btn-primary" routerLink="/products">Start shopping</a>
+    </div>
+  } @else {
+    <nav class="crumbs"><a routerLink="/cart">Cart</a> / Checkout</nav>
+    <h1>Checkout</h1>
+
+    <div class="checkout-grid">
+      <form class="form-card" (submit)="$event.preventDefault(); submit()">
+        <div class="section-title">Contact</div>
+        <input class="input" name="contactEmail" type="email" placeholder="Email" required [(ngModel)]="form.contactEmail" />
+        <input class="input" name="contactPhone" placeholder="Phone" required [(ngModel)]="form.contactPhone" />
+
+        <div class="section-title">Shipping</div>
+        <div class="grid-2">
+          <input class="input" name="shipFirstName" placeholder="First name" required [(ngModel)]="form.shipFirstName" />
+          <input class="input" name="shipLastName" placeholder="Last name" required [(ngModel)]="form.shipLastName" />
+        </div>
+        <input class="input" name="shipAddress" placeholder="Address" required [(ngModel)]="form.shipAddress" />
+        <div class="grid-3">
+          <input class="input" name="shipCity" placeholder="City" required [(ngModel)]="form.shipCity" />
+          <input class="input" name="shipZip" placeholder="ZIP" required [(ngModel)]="form.shipZip" />
+          <input class="input" name="shipCountry" placeholder="Country" required [(ngModel)]="form.shipCountry" />
+        </div>
+
+        @if (error()) {
+          <p class="form-error" role="alert">{{ error() }}</p>
+        }
+
+        <button class="btn btn-primary place" type="submit" [disabled]="placing()">
+          {{ placing() ? 'Placing…' : 'Place order · ' + (cart.subtotal() | currency: settings.currency()) }}
+        </button>
+        <p class="pay-note">No payment collected in this prototype.</p>
+      </form>
+
+      <aside class="summary">
+        <div class="summary-title">Order summary</div>
+        @for (l of cart.lines(); track l.productId) {
+          <div class="summary-line">
+            <span>{{ l.qty }}× {{ l.name }}</span>
+            <span>{{ cart.lineTotal(l) | currency: settings.currency() }}</span>
+          </div>
+        }
+        <div class="summary-total">
+          <span>Total</span>
+          <span>{{ cart.subtotal() | currency: settings.currency() }}</span>
+        </div>
+      </aside>
+    </div>
+  }
+</main>

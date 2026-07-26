@@ -3,9 +3,12 @@ import { Home } from './home/home';
 import { ProductList } from './products/product-list';
 import { ProductDetail } from './products/product-detail';
 import { CartPage } from './cart/cart-page';
+import { CheckoutPage } from './orders/checkout-page';
+import { OrderConfirmation } from './orders/order-confirmation';
 import { Login } from './auth/login';
 import { AdminLayout } from './admin/admin-layout';
 import { AdminProducts } from './admin/admin-products';
+import { AdminOrders } from './admin/admin-orders';
 import { AdminUsers } from './admin/admin-users';
 import { AdminSettings } from './admin/admin-settings';
 import { adminGuard } from './auth/admin.guard';
@@ -15,6 +18,8 @@ export const routes: Routes = [
   { path: 'products', component: ProductList },
   { path: 'products/:slug', component: ProductDetail },
   { path: 'cart', component: CartPage },
+  { path: 'checkout', component: CheckoutPage },
+  { path: 'checkout/confirmation/:id', component: OrderConfirmation },
   { path: 'login', component: Login },
   {
     path: 'admin',
@@ -24,6 +29,7 @@ export const routes: Routes = [
     children: [
       { path: '', redirectTo: 'products', pathMatch: 'full' },
       { path: 'products', component: AdminProducts },
+      { path: 'orders', component: AdminOrders },
       { path: 'users', component: AdminUsers },
       { path: 'settings', component: AdminSettings },
     ],
