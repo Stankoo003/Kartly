@@ -31,8 +31,12 @@
           } @else {
             <a routerLink="/login">Sign in</a>
           }
-          <!-- Cart lands with the cart phase. -->
-          <span class="cart" aria-label="Cart (coming soon)">🛒 Cart</span>
+          <button type="button" class="cart" (click)="cart.toggle()" aria-label="Open cart">
+            <span class="cart-icon">🛒
+              @if (cart.count()) { <span class="cart-badge">{{ cart.count() }}</span> }
+            </span>
+            Cart
+          </button>
         </div>
       </div>
 
@@ -74,5 +78,7 @@
       </div>
       <div class="base">© 2026 {{ settings.siteName() }} · Public storefront</div>
     </footer>
+
+    <app-cart-drawer />
   }
 </div>

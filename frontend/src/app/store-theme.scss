@@ -142,7 +142,20 @@
 }
 .store-actions { display: flex; align-items: center; gap: 20px; font-size: 13.5px; }
 .store-actions .who { color: var(--store-muted); }
-.store-actions .cart { display: flex; align-items: center; gap: 7px; font-weight: 600; cursor: pointer; }
+.store-actions .cart {
+  display: flex; align-items: center; gap: 7px;
+  border: none; background: none; padding: 0; cursor: pointer;
+  font: inherit; font-size: 13px; font-weight: 600; color: var(--store-ink);
+}
+.store-actions .cart-icon { position: relative; font-size: 16px; line-height: 1; }
+.store-actions .cart-badge {
+  position: absolute; top: -9px; right: -11px;
+  min-width: 17px; height: 17px; padding: 0 4px;
+  background: var(--store-accent); color: #fff;
+  font-size: 10px; font-weight: 700;
+  border-radius: 999px;
+  display: inline-flex; align-items: center; justify-content: center;
+}
 
 .store-cats {
   display: flex; gap: 6px; flex-wrap: wrap;

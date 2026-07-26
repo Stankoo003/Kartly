@@ -6,6 +6,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { map } from 'rxjs';
 import { ProductService } from './product.service';
 import { SettingsService } from '../settings/settings.service';
+import { CartService } from '../cart/cart.service';
 import { Product } from './product.models';
 
 type Status = 'loading' | 'loaded' | 'not-found' | 'error';
@@ -20,6 +21,7 @@ type Status = 'loading' | 'loaded' | 'not-found' | 'error';
 export class ProductDetail {
   private readonly api = inject(ProductService);
   protected readonly settings = inject(SettingsService);
+  private readonly cart = inject(CartService);
 
   private readonly slug = toSignal(
     inject(ActivatedRoute).paramMap.pipe(map(p => p.get('slug') ?? '')),
@@ -49,6 +51,13 @@ export class ProductDetail {
   protected retry(): void {
     const slug = this.slug();
     if (slug) this.load(slug);
+  }
+
+  protected addToCart(): void {
+    const p = this.product();
+    if (!p) return;
+    this.cart.add(p);
+    this.cart.open();
   }
 
   private load(slug: string): void {

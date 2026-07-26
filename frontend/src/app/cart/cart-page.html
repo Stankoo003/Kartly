@@ -1,0 +1,56 @@
+<main class="cart-page wrap">
+  <h1>Your cart</h1>
+
+  @if (cart.isEmpty()) {
+    <div class="empty-card">
+      <div class="mark">🛒</div>
+      <h3>Your cart is empty</h3>
+      <p>Add some products to get started.</p>
+      <a class="btn btn-primary" routerLink="/products">Start shopping</a>
+    </div>
+  } @else {
+    <div class="cart-grid">
+      <div class="lines-card">
+        <div class="lines-head">
+          <span>{{ cart.count() }} {{ cart.count() === 1 ? 'item' : 'items' }}</span>
+          <button type="button" class="clear" (click)="cart.clear()">✕ Clear cart</button>
+        </div>
+
+        @for (l of cart.lines(); track l.productId) {
+          <div class="line">
+            <a class="line-thumb" [routerLink]="['/products', l.slug]">
+              @if (l.imageUrl) { <img [src]="l.imageUrl" [alt]="l.name" /> }
+            </a>
+            <div class="line-info">
+              <a class="line-name" [routerLink]="['/products', l.slug]">{{ l.name }}</a>
+              <span class="line-unit">{{ l.price | currency: settings.currency() }} each</span>
+            </div>
+            <div class="stepper">
+              <button type="button" (click)="cart.dec(l.productId)" [disabled]="l.qty <= 1" aria-label="Decrease">−</button>
+              <span class="qty">{{ l.qty }}</span>
+              <button type="button" (click)="cart.inc(l.productId)" [disabled]="l.qty >= l.stock" aria-label="Increase">+</button>
+            </div>
+            <span class="line-total">{{ cart.lineTotal(l) | currency: settings.currency() }}</span>
+            <button type="button" class="line-remove" (click)="cart.remove(l.productId)" aria-label="Remove">✕</button>
+          </div>
+        }
+      </div>
+
+      <aside class="summary">
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <span>{{ cart.subtotal() | currency: settings.currency() }}</span>
+        </div>
+        <p class="note">Shipping &amp; taxes calculated at checkout.</p>
+        <div class="summary-total">
+          <span>Total</span>
+          <span>{{ cart.subtotal() | currency: settings.currency() }}</span>
+        </div>
+        <button type="button" class="btn btn-primary checkout" disabled title="Checkout — coming soon">
+          Continue to checkout →
+        </button>
+        <a class="keep-shopping" routerLink="/products">← Continue shopping</a>
+      </aside>
+    </div>
+  }
+</main>

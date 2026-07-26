@@ -1,0 +1,49 @@
+@if (cart.drawerOpen()) {
+  <div class="drawer-backdrop" (click)="cart.close()"></div>
+  <aside class="drawer" role="dialog" aria-label="Cart">
+    <header class="drawer-head">
+      <span class="drawer-title">Cart · {{ cart.count() }}</span>
+      <button type="button" class="drawer-close" (click)="cart.close()" aria-label="Close cart">✕</button>
+    </header>
+
+    @if (cart.isEmpty()) {
+      <div class="drawer-empty">
+        <div class="mark">🛒</div>
+        <span>Your cart is empty</span>
+      </div>
+    } @else {
+      <div class="drawer-lines">
+        @for (l of cart.lines(); track l.productId) {
+          <div class="line">
+            <a class="line-thumb" [routerLink]="['/products', l.slug]" (click)="cart.close()">
+              @if (l.imageUrl) { <img [src]="l.imageUrl" [alt]="l.name" /> }
+            </a>
+            <div class="line-main">
+              <div class="line-name">{{ l.name }}</div>
+              <div class="line-row">
+                <div class="stepper">
+                  <button type="button" (click)="cart.dec(l.productId)" [disabled]="l.qty <= 1" aria-label="Decrease">−</button>
+                  <span class="qty">{{ l.qty }}</span>
+                  <button type="button" (click)="cart.inc(l.productId)" [disabled]="l.qty >= l.stock" aria-label="Increase">+</button>
+                </div>
+                <span class="line-total">{{ cart.lineTotal(l) | currency: settings.currency() }}</span>
+              </div>
+            </div>
+            <button type="button" class="line-remove" (click)="cart.remove(l.productId)" aria-label="Remove">✕</button>
+          </div>
+        }
+      </div>
+
+      <footer class="drawer-foot">
+        <div class="subtotal">
+          <span>Subtotal</span>
+          <span>{{ cart.subtotal() | currency: settings.currency() }}</span>
+        </div>
+        <a class="btn btn-secondary view-cart" routerLink="/cart" (click)="cart.close()">View cart</a>
+        <button type="button" class="btn btn-primary checkout" disabled title="Checkout — coming soon">
+          Checkout →
+        </button>
+      </footer>
+    }
+  </aside>
+}
