@@ -18,6 +18,19 @@ export class Home {
 
   protected readonly categories = PRODUCT_CATEGORIES;
 
+  /**
+   * Artwork for a category tile, from public/img/cat/<lowercased name>.svg.
+   * The stripe placeholder stays as a second layer, so a category whose file is
+   * missing still renders as it did before rather than as an empty box.
+   *
+   * Deriving the filename with toLowerCase() only holds because every entry in
+   * PRODUCT_CATEGORIES is a single word — add one with a space and this needs a
+   * real slug helper.
+   */
+  protected catImage(category: string): string {
+    return `url(/img/cat/${category.toLowerCase()}.svg), var(--store-stripe)`;
+  }
+
   protected readonly featured = signal<Product[]>([]);
   protected readonly recent = signal<Product[]>([]);
 
