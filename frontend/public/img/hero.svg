@@ -38,7 +38,8 @@
     <circle cx="884" cy="128" r="26" fill="url(#leaf)"/>
     <circle cx="1318" cy="452" r="42" fill="none" stroke="#5aa87c" stroke-width="3" opacity="0.5"/>
 
-    <!-- faint diagonal hatch in the far corner, tying back to --store-stripe -->
+    <!-- faint diagonal hatch in the far corner, echoing the stripe placeholder
+         (no double hyphens in here: XML forbids them inside comments) -->
     <g stroke="#e2ddd3" stroke-width="8" opacity="0.75">
       <path d="M1180 600 L1400 380"/>
       <path d="M1244 600 L1400 444"/>
