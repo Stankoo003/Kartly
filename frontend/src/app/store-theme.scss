@@ -133,7 +133,11 @@
   border-radius: 999px;
   padding: 0 6px 0 18px;
   max-width: 560px;
+  transition: border-color var(--dur-2) var(--ease-standard);
 }
+/* The header search had no focus affordance at all, unlike the catalog's
+   .search-box — this makes the two consistent. */
+.store-search:focus-within { border-color: var(--store-accent); }
 .store-search input {
   flex: 1; border: none; background: none; padding: 12px 0;
   font: inherit; font-size: 14.5px; color: var(--store-ink);
@@ -149,7 +153,9 @@
   display: flex; align-items: center; gap: 7px;
   border: none; background: none; padding: 0; cursor: pointer;
   font: inherit; font-size: 13px; font-weight: 600; color: var(--store-ink);
+  transition: opacity var(--dur-1) var(--ease-standard);
 }
+.store-actions .cart:hover { opacity: 0.65; }
 .store-actions .cart-icon { position: relative; font-size: 16px; line-height: 1; }
 .store-actions .cart-badge {
   position: absolute; top: -9px; right: -11px;
@@ -167,6 +173,9 @@
 .store-cats a, .store-cats span {
   font-size: 13px; color: var(--store-ink-soft);
   padding: 6px 12px; border-radius: 999px; cursor: pointer;
+  transition:
+    background-color var(--dur-1) var(--ease-standard),
+    color var(--dur-1) var(--ease-standard);
 }
 .store-cats a:hover, .store-cats span:hover { background: var(--store-panel); color: var(--store-ink); }
 
@@ -191,7 +200,7 @@
 .store-footer .blurb { font-size: 13.5px; line-height: 1.6; max-width: 280px; color: #9a958a; }
 .store-footer h4 { font-family: var(--store-body); color: #fff; font-weight: 600; font-size: 14px; margin: 0 0 14px; letter-spacing: 0; }
 .store-footer .links { display: flex; flex-direction: column; gap: 9px; font-size: 13.5px; }
-.store-footer .links a { color: #cfcabf; }
+.store-footer .links a { color: #cfcabf; transition: color var(--dur-1) var(--ease-standard); }
 .store-footer .links a:hover { color: #fff; }
 .store-footer .base {
   border-top: 1px solid #2a2822;

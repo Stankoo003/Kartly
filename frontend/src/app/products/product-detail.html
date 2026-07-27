@@ -36,7 +36,9 @@
           <a routerLink="/">Home</a> / <a routerLink="/products">Catalog</a> / <span>{{ p.name }}</span>
         </nav>
 
-        <div class="detail-grid">
+        <!-- @switch destroys the loading branch and creates this element fresh,
+             so the entrance fires on every skeleton → loaded transition. -->
+        <div class="detail-grid" animate.enter="rise-in">
           <div class="detail-media">
             @if (p.imageUrl) {
               <img [src]="p.imageUrl" [alt]="p.name" />

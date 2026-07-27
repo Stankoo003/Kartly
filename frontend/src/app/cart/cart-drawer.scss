@@ -14,9 +14,24 @@
   z-index: 61;
   display: flex;
   flex-direction: column;
-  animation: drawer-in 0.28s ease;
 }
-@keyframes drawer-in { from { transform: translateX(100%); } to { transform: none; } }
+
+/* Driven by animate.enter / animate.leave in the template. Selectors are
+   encapsulated (so these classes stay local), but @keyframes names are NOT —
+   hence the `cart-` prefix.
+
+   The exit is faster than the entrance and uses --ease-in: things arriving
+   decelerate and can take their time, things leaving accelerate out of the
+   user's way. `both` (fill-mode) keeps the end state pinned until removal. */
+.drawer-in { animation: cart-drawer-in var(--dur-3) var(--ease-out) both; }
+.drawer-out { animation: cart-drawer-out var(--dur-2) var(--ease-in) both; }
+@keyframes cart-drawer-in { from { transform: translateX(100%); } }
+@keyframes cart-drawer-out { to { transform: translateX(100%); } }
+
+.backdrop-in { animation: cart-backdrop-in var(--dur-2) var(--ease-out) both; }
+.backdrop-out { animation: cart-backdrop-out var(--dur-2) var(--ease-in) both; }
+@keyframes cart-backdrop-in { from { opacity: 0; } }
+@keyframes cart-backdrop-out { to { opacity: 0; } }
 
 .drawer-head {
   display: flex;

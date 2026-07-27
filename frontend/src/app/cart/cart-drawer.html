@@ -1,6 +1,20 @@
 @if (cart.drawerOpen()) {
-  <div class="drawer-backdrop" (click)="cart.close()"></div>
-  <aside class="drawer" role="dialog" aria-label="Cart">
+  <!-- animate.enter / animate.leave take a literal CSS class name (static
+       attribute, no brackets). On leave Angular keeps the node in the DOM until
+       the animation ends, then removes it. Both elements need one, or the
+       backdrop would vanish instantly and the drawer would slide out over bare
+       page content. -->
+  <div
+    class="drawer-backdrop"
+    (click)="cart.close()"
+    animate.enter="backdrop-in"
+    animate.leave="backdrop-out"></div>
+  <aside
+    class="drawer"
+    role="dialog"
+    aria-label="Cart"
+    animate.enter="drawer-in"
+    animate.leave="drawer-out">
     <header class="drawer-head">
       <span class="drawer-title">Cart · {{ cart.count() }}</span>
       <button type="button" class="drawer-close" (click)="cart.close()" aria-label="Close cart">✕</button>

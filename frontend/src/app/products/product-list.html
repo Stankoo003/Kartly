@@ -90,7 +90,12 @@
       } @else {
         <div class="product-grid">
           @for (p of items(); track p.id) {
-            <app-product-card [product]="p" />
+            <!-- Stagger capped at 8: uncapped, a 24-item page would take ~840ms
+                 to finish arriving, which reads as slow rather than elegant. -->
+            <app-product-card
+              [product]="p"
+              animate.enter="rise-in"
+              [style.animation-delay.ms]="$index < 8 ? $index * 35 : 0" />
           }
         </div>
 

@@ -50,7 +50,10 @@
   margin-bottom: 18px;
 }
 .section-head h2 { font-size: 26px; margin: 0; }
-.section-more { font-size: 14px; color: var(--store-muted); font-weight: 600; }
+.section-more {
+  font-size: 14px; color: var(--store-muted); font-weight: 600;
+  transition: color var(--dur-1) var(--ease-standard);
+}
 .section-more:hover { color: var(--store-accent-strong); }
 
 /* ── category tiles ── */
@@ -66,8 +69,16 @@
   background: var(--store-surface);
   border: 1px solid var(--store-border);
   color: inherit;
+  transition:
+    transform var(--dur-2) var(--ease-standard),
+    border-color var(--dur-2) var(--ease-standard),
+    box-shadow var(--dur-2) var(--ease-standard);
 }
-.cat-tile:hover { border-color: var(--store-accent); }
+.cat-tile:hover {
+  border-color: var(--store-accent);
+  transform: translateY(var(--lift));
+  box-shadow: 0 6px 18px rgb(23 21 15 / 8%);
+}
 .cat-thumb {
   height: 120px;
   background: var(--store-stripe);
@@ -123,8 +134,11 @@
   font-weight: 700;
   font-size: 15.5px;
   cursor: pointer;
+  transition:
+    transform var(--dur-2) var(--ease-standard),
+    filter var(--dur-2) var(--ease-standard);
 }
-.promo-cta:hover { color: #0b1f14; filter: brightness(1.05); }
+.promo-cta:hover { color: #0b1f14; filter: brightness(1.05); transform: translateY(-1px); }
 
 @media (max-width: 640px) {
   .home { padding: 16px; gap: 34px; }
