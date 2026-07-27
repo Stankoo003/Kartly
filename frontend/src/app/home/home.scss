@@ -10,7 +10,8 @@
   border-radius: var(--store-radius-lg);
   overflow: hidden;
   position: relative;
-  background: var(--store-stripe);
+  /* Stripes stay as the fallback if the artwork ever fails to load. */
+  background: url('/img/hero.svg') right center / cover no-repeat, var(--store-stripe);
   min-height: 380px;
   display: flex;
   align-items: center;

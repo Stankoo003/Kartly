@@ -26,6 +26,9 @@
   --store-radius: 16px;
   --store-radius-lg: 22px;
 
+  /* Flex column so the footer is pushed to the bottom on short pages. */
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
   background: var(--store-bg);
   color: var(--store-ink);
@@ -167,10 +170,14 @@
 }
 .store-cats a:hover, .store-cats span:hover { background: var(--store-panel); color: var(--store-ink); }
 
+/* Absorbs the leftover viewport height so the footer stays at the bottom. */
+.store-shell > .store-main { flex: 1 0 auto; min-width: 0; }
+
 .store-footer {
   background: var(--store-ink);
   color: #cfcabf;
   margin-top: 56px;
+  flex-shrink: 0;
 }
 .store-footer .cols {
   display: grid;

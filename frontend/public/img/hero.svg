@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 600" width="1400" height="600" role="img" aria-label="">
+  <!-- Kartly hero backdrop. Abstract, theme-coloured; shapes sit on the right
+       half so they never collide with the copy block (max-width 480px). -->
+  <defs>
+    <linearGradient id="paper" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f4f2ee"/>
+      <stop offset="1" stop-color="#eae6dd"/>
+    </linearGradient>
+    <linearGradient id="leaf" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5aa87c"/>
+      <stop offset="1" stop-color="#3f8a61"/>
+    </linearGradient>
+    <clipPath id="frame"><rect width="1400" height="600"/></clipPath>
+  </defs>
+
+  <g clip-path="url(#frame)">
+    <rect width="1400" height="600" fill="url(#paper)"/>
+
+    <!-- soft concentric arcs, echoing the pill-shaped buttons -->
+    <g fill="none" stroke="#ded9cf" stroke-width="1.5">
+      <circle cx="1120" cy="300" r="150"/>
+      <circle cx="1120" cy="300" r="230"/>
+      <circle cx="1120" cy="300" r="310"/>
+      <circle cx="1120" cy="300" r="390"/>
+    </g>
+
+    <!-- stacked slabs: an abstract "cart" of goods -->
+    <rect x="905" y="196" width="430" height="230" rx="34" fill="#e7e3db"/>
+    <rect x="945" y="150" width="350" height="230" rx="34" fill="#efece6" stroke="#ded9cf" stroke-width="1.5"/>
+    <rect x="990" y="104" width="260" height="230" rx="34" fill="#ffffff" stroke="#e3ded4" stroke-width="1.5"/>
+
+    <!-- accent mark on the top slab -->
+    <rect x="1030" y="146" width="86" height="12" rx="6" fill="url(#leaf)"/>
+    <rect x="1030" y="176" width="140" height="8" rx="4" fill="#e0dbd1"/>
+    <rect x="1030" y="198" width="104" height="8" rx="4" fill="#e0dbd1"/>
+
+    <!-- floating accent dot + ring -->
+    <circle cx="884" cy="128" r="26" fill="url(#leaf)"/>
+    <circle cx="1318" cy="452" r="42" fill="none" stroke="#5aa87c" stroke-width="3" opacity="0.5"/>
+
+    <!-- faint diagonal hatch in the far corner, tying back to --store-stripe -->
+    <g stroke="#e2ddd3" stroke-width="8" opacity="0.75">
+      <path d="M1180 600 L1400 380"/>
+      <path d="M1244 600 L1400 444"/>
+      <path d="M1308 600 L1400 508"/>
+    </g>
+  </g>
+</svg>
