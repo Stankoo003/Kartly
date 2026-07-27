@@ -9,10 +9,15 @@ public sealed record SiteSettingsResponse(
     string Currency,
     string BannerTitle,
     string BannerSubtitle,
-    DateTime UpdatedAt)
+    DateTime UpdatedAt,
+    // Not editable, hence absent from UpdateSiteSettingsRequest — settings updates are
+    // full-replace, so exposing it there would let a client redenominate the whole catalogue.
+    // The admin product screens need it to label price inputs before any rate is loaded.
+    string BaseCurrency)
 {
     public static SiteSettingsResponse FromEntity(SiteSettings s) =>
-        new(s.SiteName, s.ContactEmail, s.Currency, s.BannerTitle, s.BannerSubtitle, s.UpdatedAt);
+        new(s.SiteName, s.ContactEmail, s.Currency, s.BannerTitle, s.BannerSubtitle, s.UpdatedAt,
+            Currencies.Base);
 }
 
 /// <summary>Full-replace payload for the settings record. Admin only.</summary>

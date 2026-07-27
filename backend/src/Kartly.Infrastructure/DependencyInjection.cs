@@ -1,11 +1,13 @@
 using System.Security.Claims;
 using System.Text;
 using Kartly.Application.Auth;
+using Kartly.Application.Currency;
 using Kartly.Application.Orders;
 using Kartly.Application.Products;
 using Kartly.Application.Settings;
 using Kartly.Application.Users;
 using Kartly.Infrastructure.Auth;
+using Kartly.Infrastructure.Currency;
 using Kartly.Infrastructure.Orders;
 using Kartly.Infrastructure.Products;
 using Kartly.Infrastructure.Users;
@@ -32,6 +34,7 @@ public static class DependencyInjection
         services.AddScoped<ISettingsService, SettingsService>();
         services.AddScoped<IOrderService, OrderService>();
 
+        AddCurrencyRates(services, config);
         AddJwtAuthentication(services, config);
 
         return services;
@@ -53,6 +56,22 @@ public static class DependencyInjection
         services.Configure<JwtSettings>(config.GetSection(JwtSettings.SectionName));
         services.AddSingleton<JwtTokenService>();
         services.AddScoped<IAuthService, AuthService>();
+    }
+
+    private static void AddCurrencyRates(IServiceCollection services, IConfiguration config)
+    {
+        // The rate service holds no state of its own (AddHttpClient makes it transient) — the
+        // cache is where fetched and last-known-good rates live.
+        services.AddMemoryCache();
+
+        services.AddHttpClient<ICurrencyRateService, OpenErApiCurrencyRateService>(client =>
+        {
+            // Trailing slash matters: the service appends the base currency code as a relative URI.
+            client.BaseAddress = new Uri(
+                config["Currency:RatesUrl"] ?? "https://open.er-api.com/v6/latest/");
+            // Short, because the storefront blocks its first paint on this.
+            client.Timeout = TimeSpan.FromSeconds(5);
+        });
     }
 
     private static void AddJwtAuthentication(IServiceCollection services, IConfiguration config)
