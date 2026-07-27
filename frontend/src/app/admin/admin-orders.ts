@@ -1,24 +1,25 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { CurrencyPipe, DatePipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { OrderService } from '../orders/order.service';
-import { SettingsService } from '../settings/settings.service';
 import { Order, OrderStatus, OrderSummary } from '../orders/order.models';
 import { UiButton } from '../ui/ui-button';
 import { UiDialog } from '../ui/ui-dialog';
+import { MoneyPipe } from '../currency/money.pipe';
+import { CurrencyService } from '../currency/currency.service';
 
 const STATUSES: readonly OrderStatus[] = ['Pending', 'Confirmed', 'Shipped', 'Cancelled'];
 
 /** Admin orders: paginated list, detail dialog, and lifecycle advance/cancel. */
 @Component({
   selector: 'app-admin-orders',
-  imports: [CurrencyPipe, DatePipe, UiButton, UiDialog],
+  imports: [MoneyPipe, DatePipe, UiButton, UiDialog],
   templateUrl: './admin-orders.html',
   styleUrl: './admin-orders.scss',
 })
 export class AdminOrders {
   private readonly api = inject(OrderService);
-  protected readonly settings = inject(SettingsService);
+  protected readonly money = inject(CurrencyService);
 
   protected readonly statuses = STATUSES;
 

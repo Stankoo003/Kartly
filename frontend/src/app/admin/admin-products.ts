@@ -1,5 +1,4 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ProductService } from '../products/product.service';
@@ -12,6 +11,8 @@ import {
 } from '../products/product.models';
 import { UiButton } from '../ui/ui-button';
 import { UiDialog } from '../ui/ui-dialog';
+import { MoneyPipe } from '../currency/money.pipe';
+import { CurrencyService } from '../currency/currency.service';
 
 type DialogMode = 'create' | 'edit' | 'delete' | null;
 type StatusFilter = 'active' | 'inactive' | 'all';
@@ -57,13 +58,14 @@ const emptyForm = (): FormModel => ({
 /** Admin-only products screen: paginated list + create/edit/delete against the live API. */
 @Component({
   selector: 'app-admin-products',
-  imports: [CurrencyPipe, FormsModule, UiButton, UiDialog],
+  imports: [MoneyPipe, FormsModule, UiButton, UiDialog],
   templateUrl: './admin-products.html',
   styleUrl: './admin-products.scss',
 })
 export class AdminProducts {
   private readonly api = inject(ProductService);
   protected readonly settings = inject(SettingsService);
+  protected readonly money = inject(CurrencyService);
 
   protected readonly categories = PRODUCT_CATEGORIES;
 

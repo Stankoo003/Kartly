@@ -1,9 +1,10 @@
 import { Component, computed, inject, input } from '@angular/core';
-import { CurrencyPipe } from '@angular/common';
+
 import { RouterLink } from '@angular/router';
-import { SettingsService } from '../settings/settings.service';
 import { CartService } from '../cart/cart.service';
 import { Product } from './product.models';
+import { MoneyPipe } from '../currency/money.pipe';
+import { CurrencyService } from '../currency/currency.service';
 
 /**
  * Presentational product card used on the home page and the catalog listing.
@@ -11,7 +12,7 @@ import { Product } from './product.models';
  */
 @Component({
   selector: 'app-product-card',
-  imports: [CurrencyPipe, RouterLink],
+  imports: [MoneyPipe, RouterLink],
   template: `
     <article class="product-card">
       <a class="product-media" [routerLink]="['/products', product().slug]" [attr.aria-label]="product().name">
@@ -26,9 +27,9 @@ import { Product } from './product.models';
         @if (product().brand) { <span class="product-brand">{{ product().brand }}</span> }
         <a class="product-name" [routerLink]="['/products', product().slug]">{{ product().name }}</a>
         <div class="product-price">
-          <span class="now">{{ product().price | currency: settings.currency() }}</span>
+          <span class="now">{{ product().price | money: money.display() }}</span>
           @if (product().discountPrice) {
-            <span class="was">{{ product().discountPrice | currency: settings.currency() }}</span>
+            <span class="was">{{ product().discountPrice | money: money.display() }}</span>
           }
         </div>
         <span class="product-stock">{{ stockLabel() }}</span>
@@ -41,7 +42,7 @@ import { Product } from './product.models';
   styleUrl: './product-card.scss',
 })
 export class ProductCard {
-  protected readonly settings = inject(SettingsService);
+  protected readonly money = inject(CurrencyService);
   private readonly cart = inject(CartService);
 
   readonly product = input.required<Product>();

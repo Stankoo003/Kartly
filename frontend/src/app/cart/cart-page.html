@@ -23,14 +23,14 @@
             </a>
             <div class="line-info">
               <a class="line-name" [routerLink]="['/products', l.slug]">{{ l.name }}</a>
-              <span class="line-unit">{{ l.price | currency: settings.currency() }} each</span>
+              <span class="line-unit">{{ l.price | money: money.display() }} each</span>
             </div>
             <div class="stepper">
               <button type="button" (click)="cart.dec(l.productId)" [disabled]="l.qty <= 1" aria-label="Decrease">−</button>
               <span class="qty">{{ l.qty }}</span>
               <button type="button" (click)="cart.inc(l.productId)" [disabled]="l.qty >= l.stock" aria-label="Increase">+</button>
             </div>
-            <span class="line-total">{{ cart.lineTotal(l) | currency: settings.currency() }}</span>
+            <span class="line-total">{{ cart.lineTotal(l) | money: money.display() }}</span>
             <button type="button" class="line-remove" (click)="cart.remove(l.productId)" aria-label="Remove">✕</button>
           </div>
         }
@@ -39,12 +39,12 @@
       <aside class="summary">
         <div class="summary-row">
           <span>Subtotal</span>
-          <span>{{ cart.subtotal() | currency: settings.currency() }}</span>
+          <span>{{ cart.subtotal() | money: money.display() }}</span>
         </div>
         <p class="note">Shipping &amp; taxes calculated at checkout.</p>
         <div class="summary-total">
           <span>Total</span>
-          <span>{{ cart.subtotal() | currency: settings.currency() }}</span>
+          <span>{{ cart.subtotal() | money: money.display() }}</span>
         </div>
         <a class="btn btn-primary checkout" routerLink="/checkout">Continue to checkout →</a>
         <a class="keep-shopping" routerLink="/products">← Continue shopping</a>

@@ -1,26 +1,27 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { CurrencyPipe } from '@angular/common';
+
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { map } from 'rxjs';
 import { ProductService } from './product.service';
-import { SettingsService } from '../settings/settings.service';
 import { CartService } from '../cart/cart.service';
 import { Product } from './product.models';
+import { MoneyPipe } from '../currency/money.pipe';
+import { CurrencyService } from '../currency/currency.service';
 
 type Status = 'loading' | 'loaded' | 'not-found' | 'error';
 
 /** Public, deep-linkable single-product view (/products/:slug). 404 → not-found state. */
 @Component({
   selector: 'app-product-detail',
-  imports: [CurrencyPipe, RouterLink],
+  imports: [MoneyPipe, RouterLink],
   templateUrl: './product-detail.html',
   styleUrl: './product-detail.scss',
 })
 export class ProductDetail {
   private readonly api = inject(ProductService);
-  protected readonly settings = inject(SettingsService);
+  protected readonly money = inject(CurrencyService);
   private readonly cart = inject(CartService);
 
   private readonly slug = toSignal(

@@ -41,6 +41,12 @@ export interface Order {
   shipCountry: string;
   status: OrderStatus;
   total: number;
+  /**
+   * ISO 4217 code `total` and every line amount are in, snapshotted at placement. Render an order
+   * in *this* currency, never in the site's current display currency — the amounts were never
+   * converted, so relabelling them would restate what the order was worth.
+   */
+  currency: string;
   createdAt: string;
   lines: OrderLine[];
 }
@@ -50,6 +56,8 @@ export interface OrderSummary {
   contactEmail: string;
   status: OrderStatus;
   total: number;
+  /** See Order.currency. */
+  currency: string;
   itemCount: number;
   createdAt: string;
 }

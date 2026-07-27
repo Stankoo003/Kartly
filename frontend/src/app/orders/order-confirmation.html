@@ -16,7 +16,7 @@
           <div class="check">✓</div>
           <h1>Order placed</h1>
           <p class="muted">
-            Order <b>{{ o.id }}</b> · Total {{ o.total | currency: settings.currency() }} ·
+            Order <b>{{ o.id }}</b> · Total {{ o.total | money: money.display() }} ·
             prices &amp; stock re-validated server-side.
           </p>
 
@@ -29,12 +29,12 @@
             @for (l of o.lines; track l.productId) {
               <div class="line">
                 <span>{{ l.quantity }}× {{ l.productName }}</span>
-                <span>{{ l.lineTotal | currency: settings.currency() }}</span>
+                <span>{{ l.lineTotal | money: money.display() }}</span>
               </div>
             }
             <div class="line total">
               <span>Total</span>
-              <span>{{ o.total | currency: settings.currency() }}</span>
+              <span>{{ o.total | money: money.display() }}</span>
             </div>
           </div>
 

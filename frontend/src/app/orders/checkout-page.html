@@ -33,7 +33,7 @@
         }
 
         <button class="btn btn-primary place" type="submit" [disabled]="placing()">
-          {{ placing() ? 'Placing…' : 'Place order · ' + (cart.subtotal() | currency: settings.currency()) }}
+          {{ placing() ? 'Placing…' : 'Place order · ' + (cart.subtotal() | money: money.display()) }}
         </button>
         <p class="pay-note">No payment collected in this prototype.</p>
       </form>
@@ -43,12 +43,12 @@
         @for (l of cart.lines(); track l.productId) {
           <div class="summary-line">
             <span>{{ l.qty }}× {{ l.name }}</span>
-            <span>{{ cart.lineTotal(l) | currency: settings.currency() }}</span>
+            <span>{{ cart.lineTotal(l) | money: money.display() }}</span>
           </div>
         }
         <div class="summary-total">
           <span>Total</span>
-          <span>{{ cart.subtotal() | currency: settings.currency() }}</span>
+          <span>{{ cart.subtotal() | money: money.display() }}</span>
         </div>
       </aside>
     </div>

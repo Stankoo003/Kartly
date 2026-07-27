@@ -44,7 +44,7 @@
               <td class="mono">{{ shortId(o.id) }}</td>
               <td>{{ o.contactEmail }}</td>
               <td class="num">{{ o.itemCount }}</td>
-              <td class="num">{{ o.total | currency: settings.currency() }}</td>
+              <td class="num">{{ o.total | money: money.ctxFor(o.currency) }}</td>
               <td>
                 <span class="tag"
                   [class.tag-neutral]="o.status === 'Pending'"
@@ -88,12 +88,12 @@
         @for (l of o.lines; track l.productId) {
           <div class="od-line">
             <span>{{ l.quantity }}× {{ l.productName }}</span>
-            <span>{{ l.lineTotal | currency: settings.currency() }}</span>
+            <span>{{ l.lineTotal | money: money.ctxFor(o.currency) }}</span>
           </div>
         }
         <div class="od-line total">
           <span>Total</span>
-          <span>{{ o.total | currency: settings.currency() }}</span>
+          <span>{{ o.total | money: money.ctxFor(o.currency) }}</span>
         </div>
       </div>
 

@@ -53,9 +53,9 @@
             <h1>{{ p.name }}</h1>
 
             <div class="price">
-              <span class="now">{{ p.price | currency: settings.currency() }}</span>
+              <span class="now">{{ p.price | money: money.display() }}</span>
               @if (p.discountPrice) {
-                <span class="was">{{ p.discountPrice | currency: settings.currency() }}</span>
+                <span class="was">{{ p.discountPrice | money: money.display() }}</span>
               }
             </div>
 
