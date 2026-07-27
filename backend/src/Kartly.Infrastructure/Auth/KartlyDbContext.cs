@@ -88,6 +88,7 @@ public sealed class KartlyDbContext(DbContextOptions<KartlyDbContext> options)
 
             order.Property(o => o.Status).HasColumnName("status").HasConversion<string>().HasMaxLength(20);
             order.Property(o => o.Total).HasColumnName("total").HasPrecision(18, 2);
+            order.Property(o => o.Currency).HasColumnName("currency").HasMaxLength(3).IsRequired();
             order.Property(o => o.CreatedAt).HasColumnName("created_at");
             order.Property(o => o.UpdatedAt).HasColumnName("updated_at");
 
