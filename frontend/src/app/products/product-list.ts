@@ -6,6 +6,8 @@ import { debounceTime, distinctUntilChanged, map } from 'rxjs';
 import { ProductService } from './product.service';
 import { PRODUCT_CATEGORIES, Product, ProductQuery, ProductSortBy } from './product.models';
 import { ProductCard } from './product-card';
+import { MoneyPipe } from '../currency/money.pipe';
+import { CurrencyService } from '../currency/currency.service';
 
 type SortKey = 'newest' | 'price-asc' | 'price-desc' | 'name';
 
@@ -23,19 +25,26 @@ const SORTS: readonly SortOption[] = [
   { key: 'name', label: 'Name: A–Z', sortBy: 'Name', desc: false },
 ];
 
-/** Upper bound of the price slider — comfortably above the seeded catalog's top price. */
+/**
+ * Upper bound of the price slider — comfortably above the seeded catalog's top price.
+ *
+ * This, the slider's step, and the ?maxPrice= query param are all **base-currency** figures and
+ * must stay that way: the API filters on Product.Price, which is base, and a shared catalog link
+ * would otherwise change meaning whenever the site currency changed. Only the label converts.
+ */
 const MAX_PRICE = 2000;
 const PAGE_SIZE = 9;
 
 /** Public catalog: category + price filters, search, sort and pagination, all driven by the URL. */
 @Component({
   selector: 'app-product-list',
-  imports: [ProductCard, RouterLink, ReactiveFormsModule],
+  imports: [ProductCard, RouterLink, ReactiveFormsModule, MoneyPipe],
   templateUrl: './product-list.html',
   styleUrl: './product-list.scss',
 })
 export class ProductList {
   private readonly api = inject(ProductService);
+  protected readonly money = inject(CurrencyService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 

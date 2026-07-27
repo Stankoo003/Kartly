@@ -61,33 +61,36 @@
     </div>
   </form>
 
-  <!-- Placeholder for a future localization feature. Intentionally inert: no state, no requests. -->
-  <section class="card elev-sm form future">
+  <!-- Read-only: makes a silent rate-fetch failure visible instead of leaving the operator to
+       wonder why converted prices look stale. -->
+  <section class="card elev-sm form">
     <div class="future-head">
-      <h3>Localization</h3>
-      <span class="tag tag-neutral">Coming soon</span>
+      <h3>Exchange rate</h3>
+      @if (money.source() === 'live') {
+        <span class="tag tag-accent-2">Live</span>
+      } @else {
+        <span class="tag tag-danger">Using fallback rates</span>
+      }
     </div>
     <p class="text-muted">
-      Language and regional formatting will be configurable here in a future release.
+      Prices are stored in {{ settings.baseCurrency() }} and converted for display. Changing the
+      currency above never rewrites a stored price, and placed orders keep the currency they were
+      placed in.
     </p>
 
     <div class="grid-2">
       <div class="field">
-        <label>Default language</label>
-        <select class="input" disabled>
-          <option>English</option>
-        </select>
+        <label>Current rate</label>
+        <p class="rate-value">
+          1 {{ settings.baseCurrency() }} = {{ money.displayRate() }} {{ settings.currency() }}
+        </p>
       </div>
       <div class="field">
-        <label>Region / date format</label>
-        <select class="input" disabled>
-          <option>Default</option>
-        </select>
+        <label>Rates published</label>
+        <p class="rate-value">
+          {{ money.updatedAt() ? (money.updatedAt() | date: 'medium') : 'Not loaded' }}
+        </p>
       </div>
-    </div>
-
-    <div class="actions">
-      <button uiButton variant="secondary" type="button" disabled>Manage translations</button>
     </div>
   </section>
 </main>
