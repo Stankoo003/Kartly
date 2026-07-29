@@ -2,6 +2,7 @@ import { Component, computed, inject, input } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { SettingsService } from '../settings/settings.service';
+import { CartService } from '../cart/cart.service';
 import { Product } from './product.models';
 
 /**
@@ -31,7 +32,7 @@ import { Product } from './product.models';
           }
         </div>
         <span class="product-stock">{{ stockLabel() }}</span>
-        <button type="button" class="btn btn-primary product-add" [disabled]="product().stockQuantity <= 0">
+        <button type="button" class="btn btn-primary product-add" [disabled]="product().stockQuantity <= 0" (click)="add()">
           {{ product().stockQuantity <= 0 ? 'Out of stock' : 'Add to cart' }}
         </button>
       </div>
@@ -41,8 +42,14 @@ import { Product } from './product.models';
 })
 export class ProductCard {
   protected readonly settings = inject(SettingsService);
+  private readonly cart = inject(CartService);
 
   readonly product = input.required<Product>();
+
+  protected add(): void {
+    this.cart.add(this.product());
+    this.cart.open();
+  }
 
   protected readonly stockLabel = computed(() => {
     const q = this.product().stockQuantity;

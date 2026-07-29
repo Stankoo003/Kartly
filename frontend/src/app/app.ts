@@ -4,11 +4,13 @@ import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router
 import { filter, map } from 'rxjs';
 import { AuthService } from './auth/auth.service';
 import { SettingsService } from './settings/settings.service';
+import { CartService } from './cart/cart.service';
+import { CartDrawer } from './cart/cart-drawer';
 import { PRODUCT_CATEGORIES } from './products/product.models';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink],
+  imports: [RouterOutlet, RouterLink, CartDrawer],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
@@ -16,6 +18,7 @@ export class App {
   private readonly router = inject(Router);
   protected readonly auth = inject(AuthService);
   protected readonly settings = inject(SettingsService);
+  protected readonly cart = inject(CartService);
 
   protected readonly categories = PRODUCT_CATEGORIES;
 
