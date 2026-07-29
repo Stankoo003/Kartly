@@ -2,12 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { SettingsService } from '../settings/settings.service';
-
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-}
+import { PagedResult, Product } from '../products/product.models';
 
 /** Public-ish landing: shows API health and the product catalog (requires a token). */
 @Component({
@@ -51,9 +46,10 @@ export class Home {
   }
 
   private load(): void {
+    // The endpoint returns a paged envelope, not a bare array.
     // 401 when unauthenticated — swallow so the page still renders.
-    this.http.get<Product[]>('/api/products').subscribe({
-      next: p => this.products.set(p),
+    this.http.get<PagedResult<Product>>('/api/products').subscribe({
+      next: result => this.products.set(result.items),
       error: () => this.products.set([]),
     });
   }

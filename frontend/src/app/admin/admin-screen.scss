@@ -1,0 +1,70 @@
+/* Layout shared by the admin screens (products / users / settings). Each screen
+   `@use`s this and adds only its own specifics. Angular scopes these rules to the
+   component that pulls them in, so there is no global leakage. */
+
+.screen {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.screen-head {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-danger) 10%, transparent);
+  color: var(--color-danger);
+  font-size: 14px;
+}
+
+.state { padding: var(--space-8) 0; text-align: center; }
+
+.empty {
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-8) var(--space-4);
+  text-align: center;
+}
+
+.table-wrap { padding: var(--space-2) var(--space-4); overflow-x: auto; }
+
+/* Filter tabs above a table (All / Active / Inactive). */
+.tabs {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-right: auto;
+}
+.tab {
+  padding: 6px 14px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--admin-muted);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+.tab:hover { color: var(--color-text); }
+.tab.active {
+  background: var(--color-surface);
+  color: var(--color-accent);
+  font-weight: 600;
+  box-shadow: var(--shadow-sm);
+}
+
+/* forms (mostly inside dialogs) */
+.form { display: flex; flex-direction: column; gap: var(--space-3); }
+.form-error { margin: 0; font-size: 13px; color: var(--color-danger); }
+.field-error { margin: 4px 0 0; font-size: 12px; color: var(--color-danger); }
