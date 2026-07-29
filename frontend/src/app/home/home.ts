@@ -2,9 +2,9 @@ import { Component, inject, signal } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { ProductService } from '../products/product.service';
 import { SettingsService } from '../settings/settings.service';
-import { PagedResult, Product } from '../products/product.models';
+import { PRODUCT_CATEGORIES, Product } from '../products/product.models';
 
-/** Public-ish landing: shows API health and the product catalog (requires a token). */
+/** Public storefront home: hero, categories, featured + recent products, promo. No auth required. */
 @Component({
   selector: 'app-home',
   imports: [CurrencyPipe],
@@ -32,12 +32,10 @@ export class Home {
     });
   }
 
-  private load(): void {
-    // The endpoint returns a paged envelope, not a bare array.
-    // 401 when unauthenticated — swallow so the page still renders.
-    this.http.get<PagedResult<Product>>('/api/products').subscribe({
-      next: result => this.products.set(result.items),
-      error: () => this.products.set([]),
-    });
+  /** Whole-number stock hint shown on the card. */
+  protected stockLabel(p: Product): string {
+    if (p.stockQuantity <= 0) return 'Out of stock';
+    if (p.stockQuantity < 10) return `Only ${p.stockQuantity} left`;
+    return 'In stock';
   }
 }
