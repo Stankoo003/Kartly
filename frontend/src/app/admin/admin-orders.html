@@ -1,16 +1,17 @@
 <main class="screen">
   <header class="screen-head">
-    <div>
-      <h2>Orders</h2>
-      <p class="text-muted count">{{ total() }} total</p>
+    <!-- The screen heading lives in the admin topbar (fed by the route's data.title),
+         so it is deliberately absent here. -->
+    <div class="tabs" role="tablist">
+      <button class="tab" type="button" role="tab"
+              [class.active]="statusFilter() === ''" [attr.aria-selected]="statusFilter() === ''"
+              (click)="setStatusFilter('')">All</button>
+      @for (s of statuses; track s) {
+        <button class="tab" type="button" role="tab"
+                [class.active]="statusFilter() === s" [attr.aria-selected]="statusFilter() === s"
+                (click)="setStatusFilter(s)">{{ s }}</button>
+      }
     </div>
-    <label class="field status-filter">
-      <span class="text-muted">Status</span>
-      <select class="input" [value]="statusFilter()" (change)="setStatusFilter($any($event.target).value)">
-        <option value="">All</option>
-        @for (s of statuses; track s) { <option [value]="s">{{ s }}</option> }
-      </select>
-    </label>
   </header>
 
   @if (error()) {
@@ -62,11 +63,7 @@
       </table>
     </div>
 
-    <nav class="pager">
-      <button uiButton variant="secondary" size="sm" [disabled]="page() <= 1" (click)="goToPage(page() - 1)">Prev</button>
-      <span class="text-muted">Page {{ page() }} / {{ totalPages() }}</span>
-      <button uiButton variant="secondary" size="sm" [disabled]="page() >= totalPages()" (click)="goToPage(page() + 1)">Next</button>
-    </nav>
+    <ui-pager [page]="page()" [pageSize]="pageSize" [total]="total()" (pageChange)="goToPage($event)" />
   }
 </main>
 

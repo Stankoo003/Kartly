@@ -5,6 +5,7 @@ import { OrderService } from '../orders/order.service';
 import { Order, OrderStatus, OrderSummary } from '../orders/order.models';
 import { UiButton } from '../ui/ui-button';
 import { UiDialog } from '../ui/ui-dialog';
+import { UiPager } from '../ui/ui-pager';
 import { MoneyPipe } from '../currency/money.pipe';
 import { CurrencyService } from '../currency/currency.service';
 
@@ -13,7 +14,7 @@ const STATUSES: readonly OrderStatus[] = ['Pending', 'Confirmed', 'Shipped', 'Ca
 /** Admin orders: paginated list, detail dialog, and lifecycle advance/cancel. */
 @Component({
   selector: 'app-admin-orders',
-  imports: [MoneyPipe, DatePipe, UiButton, UiDialog],
+  imports: [MoneyPipe, DatePipe, UiButton, UiDialog, UiPager],
   templateUrl: './admin-orders.html',
   styleUrl: './admin-orders.scss',
 })
@@ -72,8 +73,9 @@ export class AdminOrders {
     });
   }
 
-  protected setStatusFilter(value: string): void {
-    this.statusFilter.set(value as OrderStatus | '');
+  /** `''` is the All tab. Typed now that the value comes from the tabs rather than a select. */
+  protected setStatusFilter(value: OrderStatus | ''): void {
+    this.statusFilter.set(value);
     this.page.set(1);
     this.load();
   }
