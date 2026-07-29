@@ -1,5 +1,6 @@
 using Kartly.Application.Orders;
 using Kartly.Application.Products; // PagedResult<T>
+using Kartly.Application.Settings; // Currencies.Base
 using Kartly.Infrastructure.Auth;
 using Microsoft.EntityFrameworkCore;
 
@@ -34,6 +35,7 @@ public sealed class OrderService(KartlyDbContext context) : IOrderService
             ShipZip = request.ShipZip.Trim(),
             ShipCountry = request.ShipCountry.Trim(),
             Status = OrderStatus.Pending,
+            Currency = Currencies.Base, // snapshot: what these amounts are denominated in, for good
         };
 
         foreach (var item in request.Items)
@@ -42,6 +44,8 @@ public sealed class OrderService(KartlyDbContext context) : IOrderService
                 throw new OrderValidationException("A product in your cart is no longer available. Please review your cart.");
 
             // "Price no longer matches" — the client's expected price differs from the current one.
+            // Both sides are base-currency amounts: the storefront converts only when rendering,
+            // never before POSTing, so this compares like with like whatever currency is on display.
             if (product.Price != item.UnitPrice)
                 throw new OrderValidationException(
                     $"The price for '{product.Name}' has changed. Please review your cart and try again.");

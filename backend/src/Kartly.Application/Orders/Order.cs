@@ -1,3 +1,5 @@
+using Kartly.Application.Settings;
+
 namespace Kartly.Application.Orders;
 
 /// <summary>A placed order. Prices are snapshotted per line at placement time.</summary>
@@ -19,6 +21,14 @@ public sealed class Order
 
     /// <summary>Order total — the sum of the line totals, snapshotted at placement.</summary>
     public decimal Total { get; set; }
+
+    /// <summary>
+    /// ISO 4217 code the amounts on this order are denominated in — the base currency as of
+    /// placement. Snapshotted so changing the site's display currency can never restate what a
+    /// past order was worth. Lines deliberately have no currency of their own: they belong to
+    /// exactly one order, so a per-line column could only ever disagree with this one.
+    /// </summary>
+    public string Currency { get; set; } = Currencies.Base;
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

@@ -1,19 +1,22 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { SettingsService } from '../settings/settings.service';
 import { CURRENCIES, UpdateSiteSettingsRequest } from '../settings/site-settings.models';
 import { UiButton } from '../ui/ui-button';
+import { CurrencyService } from '../currency/currency.service';
 
 /** Admin-only site settings: name, contact email and currency, consumed by the storefront. */
 @Component({
   selector: 'app-admin-settings',
-  imports: [FormsModule, UiButton],
+  imports: [FormsModule, UiButton, DatePipe],
   templateUrl: './admin-settings.html',
   styleUrl: './admin-settings.scss',
 })
 export class AdminSettings {
-  private readonly settings = inject(SettingsService);
+  protected readonly settings = inject(SettingsService);
+  protected readonly money = inject(CurrencyService);
 
   protected readonly currencies = CURRENCIES;
 

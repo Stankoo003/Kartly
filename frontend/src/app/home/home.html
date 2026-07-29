@@ -18,7 +18,7 @@
     <div class="cat-grid">
       @for (c of categories; track c) {
         <a class="cat-tile" routerLink="/products" [queryParams]="{ category: c }">
-          <div class="cat-thumb">{{ c }}</div>
+          <div class="cat-thumb" [style.background-image]="catImage(c)"></div>
           <div class="cat-name">{{ c }}</div>
         </a>
       }

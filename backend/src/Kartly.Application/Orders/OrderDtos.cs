@@ -40,21 +40,26 @@ public sealed record OrderResponse(
     string ShipCountry,
     string Status,
     decimal Total,
+    // The currency Total and every line amount are in. Clients must render this order in its own
+    // currency, never in the site's current display currency.
+    string Currency,
     DateTime CreatedAt,
     IReadOnlyList<OrderLineResponse> Lines)
 {
     public static OrderResponse FromEntity(Order o) => new(
         o.Id, o.ContactEmail, o.ContactPhone, o.ShipFirstName, o.ShipLastName, o.ShipAddress,
-        o.ShipCity, o.ShipZip, o.ShipCountry, o.Status.ToString(), o.Total, o.CreatedAt,
+        o.ShipCity, o.ShipZip, o.ShipCountry, o.Status.ToString(), o.Total, o.Currency, o.CreatedAt,
         o.Lines.Select(OrderLineResponse.FromEntity).ToList());
 }
 
 /// <summary>Compact order shape for the admin list.</summary>
 public sealed record OrderSummaryResponse(
-    Guid Id, string ContactEmail, string Status, decimal Total, int ItemCount, DateTime CreatedAt)
+    Guid Id, string ContactEmail, string Status, decimal Total, string Currency, int ItemCount,
+    DateTime CreatedAt)
 {
     public static OrderSummaryResponse FromEntity(Order o) =>
-        new(o.Id, o.ContactEmail, o.Status.ToString(), o.Total, o.Lines.Sum(l => l.Quantity), o.CreatedAt);
+        new(o.Id, o.ContactEmail, o.Status.ToString(), o.Total, o.Currency,
+            o.Lines.Sum(l => l.Quantity), o.CreatedAt);
 }
 
 /// <summary>Body for the admin status-change endpoint.</summary>

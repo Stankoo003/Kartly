@@ -40,7 +40,7 @@
                   <span class="qty">{{ l.qty }}</span>
                   <button type="button" (click)="cart.inc(l.productId)" [disabled]="l.qty >= l.stock" aria-label="Increase">+</button>
                 </div>
-                <span class="line-total">{{ cart.lineTotal(l) | currency: settings.currency() }}</span>
+                <span class="line-total">{{ cart.lineTotal(l) | money: money.display() }}</span>
               </div>
             </div>
             <button type="button" class="line-remove" (click)="cart.remove(l.productId)" aria-label="Remove">✕</button>
@@ -51,7 +51,7 @@
       <footer class="drawer-foot">
         <div class="subtotal">
           <span>Subtotal</span>
-          <span>{{ cart.subtotal() | currency: settings.currency() }}</span>
+          <span>{{ cart.subtotal() | money: money.display() }}</span>
         </div>
         <a class="btn btn-secondary view-cart" routerLink="/cart" (click)="cart.close()">View cart</a>
         <a class="btn btn-primary checkout" routerLink="/checkout" (click)="cart.close()">Checkout →</a>

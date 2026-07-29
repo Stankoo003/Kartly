@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using Kartly.Application.Settings;
 using Kartly.Infrastructure.Auth;
 using Xunit;
 
@@ -19,7 +20,7 @@ public sealed class SettingsTests : IClassFixture<PostgresApiFactory>
     private sealed record AuthResponse(string Token, string Email, string Role, DateTimeOffset ExpiresAt);
     private sealed record SettingsResponse(
         string SiteName, string ContactEmail, string Currency,
-        string BannerTitle, string BannerSubtitle, DateTime UpdatedAt);
+        string BannerTitle, string BannerSubtitle, DateTime UpdatedAt, string BaseCurrency);
 
     // Valid banner fields to satisfy the [Required] rules on every update payload.
     private const string Bt = "Shop the season";
@@ -41,6 +42,8 @@ public sealed class SettingsTests : IClassFixture<PostgresApiFactory>
         Assert.False(string.IsNullOrWhiteSpace(body.Currency));
         Assert.False(string.IsNullOrWhiteSpace(body.BannerTitle));
         Assert.False(string.IsNullOrWhiteSpace(body.BannerSubtitle));
+        // Read-only and fixed server-side: what stored amounts are denominated in.
+        Assert.Equal(Currencies.Base, body.BaseCurrency);
     }
 
     // --- update ---

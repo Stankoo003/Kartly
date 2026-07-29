@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using Kartly.Application.Settings;
 using Kartly.Infrastructure.Auth;
 using Xunit;
 
@@ -20,7 +21,8 @@ public sealed class OrdersTests : IClassFixture<PostgresApiFactory>
     private sealed record AuthResponse(string Token, string Email, string Role, DateTimeOffset ExpiresAt);
     private sealed record ProductResponse(Guid Id, string Slug, string Sku, decimal Price, int StockQuantity);
     private sealed record OrderLine(Guid ProductId, string ProductName, decimal UnitPrice, int Quantity, decimal LineTotal);
-    private sealed record OrderResponse(Guid Id, string Status, decimal Total, IReadOnlyList<OrderLine> Lines);
+    private sealed record OrderResponse(
+        Guid Id, string Status, decimal Total, string Currency, IReadOnlyList<OrderLine> Lines);
 
     // --- placement ---
 
@@ -139,6 +141,43 @@ public sealed class OrdersTests : IClassFixture<PostgresApiFactory>
     }
 
     // --- helpers ---
+
+    [Fact]
+    public async Task Place_SnapshotsTheBaseCurrency()
+    {
+        var admin = _factory.CreateClient();
+        var product = await CreateProductAsync(admin, price: 40m, stock: 4);
+
+        var anon = _factory.CreateClient();
+        var response = await anon.PostAsJsonAsync("/api/orders", OrderPayload(product, qty: 1));
+
+        var order = await response.Content.ReadFromJsonAsync<OrderResponse>();
+        // Recorded at placement so changing the site's display currency can never restate what a
+        // past order was worth.
+        Assert.Equal(Currencies.Base, order!.Currency);
+    }
+
+    /// <summary>
+    /// Pins the core constraint of the currency feature at the API boundary: display conversion
+    /// happens at render time only. If a client ever converts before POSTing — say it sends the
+    /// RSD figure the shopper saw — the server must reject it, because UnitPrice is compared
+    /// against Product.Price, which is a base-currency amount.
+    /// </summary>
+    [Fact]
+    public async Task Place_WithConvertedUnitPrice_IsRejected()
+    {
+        var admin = _factory.CreateClient();
+        var product = await CreateProductAsync(admin, price: 40m, stock: 4);
+
+        var anon = _factory.CreateClient();
+        var converted = product.Price * 117.4m; // as if the client sent RSD instead of EUR
+        var payload = OrderPayload(product, qty: 1) with { Items = [new(product.Id, 1, converted)] };
+        var response = await anon.PostAsJsonAsync("/api/orders", payload);
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        var body = await response.Content.ReadFromJsonAsync<ErrorBody>();
+        Assert.Contains("price", body!.Error, StringComparison.OrdinalIgnoreCase);
+    }
 
     private sealed record ErrorBody(string Error);
 

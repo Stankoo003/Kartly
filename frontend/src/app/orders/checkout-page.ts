@@ -1,12 +1,13 @@
 import { Component, inject, signal } from '@angular/core';
-import { CurrencyPipe } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router, RouterLink } from '@angular/router';
 import { CartService } from '../cart/cart.service';
-import { SettingsService } from '../settings/settings.service';
 import { OrderService } from './order.service';
 import { PlaceOrderRequest } from './order.models';
+import { MoneyPipe } from '../currency/money.pipe';
+import { CurrencyService } from '../currency/currency.service';
 
 interface CheckoutForm {
   contactEmail: string;
@@ -27,13 +28,13 @@ const emptyForm = (): CheckoutForm => ({
 /** Checkout: contact + shipping form and an order summary. Places an order (no payment). */
 @Component({
   selector: 'app-checkout-page',
-  imports: [CurrencyPipe, FormsModule, RouterLink],
+  imports: [MoneyPipe, FormsModule, RouterLink],
   templateUrl: './checkout-page.html',
   styleUrl: './checkout-page.scss',
 })
 export class CheckoutPage {
   protected readonly cart = inject(CartService);
-  protected readonly settings = inject(SettingsService);
+  protected readonly money = inject(CurrencyService);
   private readonly orders = inject(OrderService);
   private readonly router = inject(Router);
 
@@ -53,6 +54,8 @@ export class CheckoutPage {
       shipCity: this.form.shipCity.trim(),
       shipZip: this.form.shipZip.trim(),
       shipCountry: this.form.shipCountry.trim(),
+      // unitPrice goes out in the base currency, unconverted — the server compares it to
+      // Product.Price, which is also base. The display currency never enters this payload.
       items: this.cart.lines().map(l => ({ productId: l.productId, quantity: l.qty, unitPrice: l.price })),
     };
 

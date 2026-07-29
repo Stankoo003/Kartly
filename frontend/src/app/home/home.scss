@@ -79,14 +79,15 @@
   transform: translateY(var(--lift));
   box-shadow: 0 6px 18px rgb(23 21 15 / 8%);
 }
+/* background-image comes from the template (Home.catImage) so the artwork path
+   is derived from the category name; the stripe placeholder is layered under it
+   there as the fallback. */
 .cat-thumb {
   height: 120px;
   background: var(--store-stripe);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--store-muted);
-  font-size: 12px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 .cat-name { padding: 13px 15px; font-weight: 600; font-size: 14.5px; }
 

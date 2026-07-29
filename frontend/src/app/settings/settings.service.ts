@@ -2,7 +2,7 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Title } from '@angular/platform-browser';
 import { Observable, catchError, of, tap } from 'rxjs';
-import { SiteSettings, UpdateSiteSettingsRequest } from './site-settings.models';
+import { BASE_CURRENCY, SiteSettings, UpdateSiteSettingsRequest } from './site-settings.models';
 
 /** Used until the API responds (and if it never does), so the UI always renders something sane. */
 const FALLBACK = {
@@ -26,6 +26,8 @@ export class SettingsService {
   readonly siteName = computed(() => this.settings()?.siteName || FALLBACK.siteName);
   readonly contactEmail = computed(() => this.settings()?.contactEmail ?? FALLBACK.contactEmail);
   readonly currency = computed(() => this.settings()?.currency || FALLBACK.currency);
+  /** What stored amounts are in. Fixed server-side; the admin cannot change it. */
+  readonly baseCurrency = computed(() => this.settings()?.baseCurrency || BASE_CURRENCY);
   readonly bannerTitle = computed(() => this.settings()?.bannerTitle || FALLBACK.bannerTitle);
   readonly bannerSubtitle = computed(() => this.settings()?.bannerSubtitle || FALLBACK.bannerSubtitle);
 

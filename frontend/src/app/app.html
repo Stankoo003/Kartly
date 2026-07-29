@@ -24,9 +24,9 @@
         <div class="store-actions">
           @if (auth.isAuthenticated()) {
             <span class="who">{{ auth.email() }}</span>
-            @if (auth.isAdmin()) {
-              <a routerLink="/admin">Admin</a>
-            }
+            <!-- No admin link here: the storefront must not advertise that an
+                 admin area exists. Admins reach /admin by URL, and login already
+                 redirects them there. -->
             <a href="#" (click)="$event.preventDefault(); logout()">Sign out</a>
           } @else {
             <a routerLink="/login">Sign in</a>

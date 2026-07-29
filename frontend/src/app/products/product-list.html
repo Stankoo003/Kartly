@@ -29,7 +29,7 @@
       <div class="filter-group">
         <div class="filter-label">
           Max price ·
-          {{ maxPrice() >= maxPriceCap ? 'Any' : maxPrice() }}
+          {{ maxPrice() >= maxPriceCap ? 'Any' : (maxPrice() | money: money.display()) }}
         </div>
         <input
           type="range" min="0" [max]="maxPriceCap" step="50"
