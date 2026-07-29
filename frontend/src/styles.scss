@@ -72,6 +72,22 @@
   --shadow-sm: 0 1px 2px color-mix(in srgb, #2e2b25 14%, transparent);
   --shadow-md: 0 3px 10px color-mix(in srgb, #2e2b25 16%, transparent);
   --shadow-lg: 0 12px 32px color-mix(in srgb, #2e2b25 22%, transparent);
+
+  /* — motion —
+     Three durations, three easings; every animation in the app picks from here.
+     Deliberately on :root and not in store-theme.scss: the --store-* tokens live
+     inside `.store-shell`, which App only adds on non-admin routes, so a motion
+     token declared there would be unset on /admin and every transition using it
+     would silently become an invalid declaration. */
+  --dur-1: 120ms; /* micro — colour/opacity on hover */
+  --dur-2: 200ms; /* standard — transform + shadow */
+  --dur-3: 320ms; /* large — drawers, content entrances */
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1); /* arriving — decelerates */
+  --ease-in: cubic-bezier(0.55, 0, 1, 0.45); /* leaving — accelerates away */
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1); /* hover / state changes */
+
+  --lift: -2px; /* the one hover translate used app-wide */
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -100,7 +116,10 @@ h4 { font-size: 20px; }
 h5 { font-size: 16px; }
 h6 { font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; }
 p { margin: 0 0 var(--space-3); }
-a { color: var(--color-accent); text-underline-offset: 3px; }
+/* Transitions throughout enumerate their properties rather than using `all`:
+   `all` animates layout properties (a relayout per frame) and fires stray
+   transitionend events on elements where animate.enter/leave listens for them. */
+a { color: var(--color-accent); text-underline-offset: 3px; transition: color var(--dur-1) var(--ease-standard); }
 img { display: block; max-width: 100%; }
 
 .text-muted { color: color-mix(in srgb, var(--color-text) 55%, transparent); }
@@ -119,9 +138,16 @@ img { display: block; max-width: 100%; }
   background: transparent; border: 1px solid transparent;
   padding: var(--space-2) calc(var(--space-3) * 1.2);
   border-radius: var(--radius-md);
+  transition:
+    background-color var(--dur-1) var(--ease-standard),
+    border-color var(--dur-1) var(--ease-standard),
+    color var(--dur-1) var(--ease-standard),
+    opacity var(--dur-1) var(--ease-standard),
+    transform var(--dur-1) var(--ease-standard);
 }
 .btn svg { display: block; }
 .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn:active:not(:disabled) { transform: scale(0.97); }
 .btn-primary { background: var(--color-accent); color: var(--color-bg); }
 .btn-primary:hover:not(:disabled) { background: var(--color-accent-600); }
 .btn-primary:active:not(:disabled) { background: var(--color-accent-700); }
@@ -148,6 +174,9 @@ img { display: block; max-width: 100%; }
   font-size: 14px; color: var(--color-text); caret-color: var(--color-accent);
   background: var(--color-surface);
   border: 1px solid var(--color-divider); border-radius: 999px;
+  transition:
+    border-color var(--dur-1) var(--ease-standard),
+    background-color var(--dur-1) var(--ease-standard);
 }
 .input:hover { border-color: color-mix(in srgb, var(--color-text) 45%, transparent); }
 .input:focus-visible { border-color: var(--color-accent); outline-offset: 0; }
@@ -159,6 +188,7 @@ textarea.input { min-height: 90px; resize: vertical; border-radius: var(--radius
   display: flex; flex-direction: column; gap: var(--space-2);
   padding: var(--space-4); border-radius: calc(var(--radius-lg) * 1.15);
   background: var(--color-surface);
+  transition: box-shadow var(--dur-2) var(--ease-standard);
 }
 .card-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 17px; line-height: 1.2; }
 .elev-sm { box-shadow: var(--shadow-sm); }
@@ -182,7 +212,7 @@ textarea.input { min-height: 90px; resize: vertical; border-radius: var(--radius
   background: var(--color-surface);
 }
 .nav-brand { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 18px; margin-right: auto; }
-.nav a { color: inherit; text-decoration: none; font-size: 14px; }
+.nav a { color: inherit; text-decoration: none; font-size: 14px; transition: color var(--dur-1) var(--ease-standard); }
 .nav a:hover, .nav a[aria-current='page'] { color: var(--color-accent); }
 
 /* — tables — */
@@ -196,6 +226,7 @@ textarea.input { min-height: 90px; resize: vertical; border-radius: var(--radius
   padding: var(--space-2);
   border-bottom: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent);
 }
+.table tbody tr { transition: background-color var(--dur-1) var(--ease-standard); }
 .table tbody tr:hover { background: color-mix(in srgb, var(--color-text) 4%, transparent); }
 
 /* — dialog — */
@@ -213,3 +244,60 @@ textarea.input { min-height: 90px; resize: vertical; border-radius: var(--radius
 .dialog-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 20px; }
 .dialog-body { font-size: 14px; }
 .dialog-actions { display: flex; justify-content: flex-end; gap: var(--space-2); margin-top: var(--space-2); }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   Motion — shared keyframes, route transitions, reduced-motion opt-out.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* Skeleton shimmer. Global because @keyframes names are NOT scoped by Angular's
+   emulated encapsulation (only selectors are) — product-list and product-detail
+   used to declare an identical `pulse` each and resolve against whichever the
+   bundler emitted last. */
+@keyframes pulse { 50% { opacity: 0.55; } }
+
+/* Entrance used via Angular's `animate.enter`: Angular adds the class when the
+   element enters the DOM, the CSS does the rest. `both` (fill-mode) holds the
+   `from` state through any animation-delay, so staggered items don't flash at
+   full opacity before their turn. */
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+.rise-in { animation: rise-in var(--dur-3) var(--ease-out) both; }
+
+/* Route transitions (withViewTransitions). The browser snapshots the viewport
+   before/after navigation and cross-fades — no JS animates, we only style the
+   pseudo-elements. They're generated on the document root, so this has to be
+   global; component styles can't reach them.
+
+   Opacity only, never transform: the `root` snapshot includes the sticky header
+   and footer, so translating it would slide the header off its sticky position
+   and can momentarily introduce a scrollbar. Durations are hardcoded rather than
+   tokenised because custom-property inheritance into these pseudo-elements is a
+   murky corner of the spec. */
+::view-transition-old(root) { animation: vt-out 90ms var(--ease-in) both; }
+::view-transition-new(root) { animation: vt-in 220ms var(--ease-out) both; }
+@keyframes vt-out { to { opacity: 0; } }
+@keyframes vt-in { from { opacity: 0; } }
+
+/* One global opt-out covering every transition/animation, including ones written
+   later. Collapsed to 0.01ms rather than `none` because `animate.leave` waits for
+   animationend before removing the node — a near-zero duration still fires it. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* `*` does not match the view-transition pseudo-elements — they need their own
+     rule or the route cross-fade survives the guard. */
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}

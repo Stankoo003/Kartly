@@ -32,6 +32,7 @@
 .filters-reset {
   background: none; border: none; padding: 0; cursor: pointer;
   font: inherit; font-size: 12.5px; font-weight: 600; color: var(--store-accent-strong);
+  transition: color var(--dur-1) var(--ease-standard);
 }
 .filter-group { margin-bottom: 22px; }
 .filter-group:last-child { margin-bottom: 0; }
@@ -63,6 +64,7 @@
   border: 1px solid var(--store-border);
   border-radius: 999px;
   padding: 0 16px;
+  transition: border-color var(--dur-2) var(--ease-standard);
 }
 .search-box:focus-within { border-color: var(--store-accent); }
 .search-icon { color: var(--store-muted); font-size: 16px; }
@@ -119,8 +121,9 @@
 .skeleton-line { height: 12px; border-radius: 4px; background: var(--store-panel); margin: 12px 15px 0; }
 .skeleton-line.w60 { width: 50%; }
 .skeleton-line.w80 { width: 80%; }
+/* @keyframes pulse lives in styles.scss — keyframe names aren't scoped by view
+   encapsulation, so declaring it per-component was a duplicate waiting to drift. */
 .skeleton, .skeleton-media { animation: pulse 1.2s ease-in-out infinite; }
-@keyframes pulse { 50% { opacity: 0.55; } }
 
 /* ── state cards ── */
 .state-card {
@@ -157,6 +160,10 @@
   font: inherit;
   font-size: 14px;
   cursor: pointer;
+  transition:
+    border-color var(--dur-1) var(--ease-standard),
+    background-color var(--dur-1) var(--ease-standard),
+    color var(--dur-1) var(--ease-standard);
 }
 .page-btn:hover:not(:disabled):not(.current) { border-color: var(--store-accent); }
 .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }

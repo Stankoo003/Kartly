@@ -31,7 +31,10 @@
       <div class="section-head"><h2>Featured products</h2></div>
       <div class="product-grid">
         @for (p of featured(); track p.id) {
-          <app-product-card [product]="p" />
+          <app-product-card
+            [product]="p"
+            animate.enter="rise-in"
+            [style.animation-delay.ms]="$index < 8 ? $index * 35 : 0" />
         }
       </div>
     </section>
@@ -46,7 +49,10 @@
       </div>
       <div class="product-grid">
         @for (p of recent(); track p.id) {
-          <app-product-card [product]="p" />
+          <app-product-card
+            [product]="p"
+            animate.enter="rise-in"
+            [style.animation-delay.ms]="$index < 8 ? $index * 35 : 0" />
         }
       </div>
     </section>

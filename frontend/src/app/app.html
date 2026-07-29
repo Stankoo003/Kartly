@@ -49,7 +49,9 @@
     </header>
   }
 
-  <router-outlet />
+  <main class="store-main">
+    <router-outlet />
+  </main>
 
   @if (!isAdminArea()) {
     <footer class="store-footer">

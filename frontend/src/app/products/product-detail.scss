@@ -86,8 +86,8 @@
 .sk-line.tall { height: 28px; }
 .sk-line.w30 { width: 30%; } .sk-line.w40 { width: 40%; } .sk-line.w80 { width: 80%; }
 .sk-line.w90 { width: 90%; } .sk-line.w100 { width: 100%; }
+/* @keyframes pulse is declared globally in styles.scss. */
 .skeleton-media, .sk-line { animation: pulse 1.2s ease-in-out infinite; }
-@keyframes pulse { 50% { opacity: 0.55; } }
 
 @media (max-width: 760px) {
   .detail { padding: 16px; }
