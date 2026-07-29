@@ -1,0 +1,75 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   Admin theme — dashboard look, scoped to the admin subtree only.
+
+   The storefront keeps the warm "Organic" palette from src/styles.scss. Here we
+   re-point the same custom properties on .admin-shell, so every shared class
+   (.card, .input, .btn, .table, .tag, .dialog) picks up the back-office look
+   without being forked. ui-dialog renders in place, so dialogs inherit too.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.admin-shell {
+  /* shell-only colours — Cartly: dark rounded sidebar card on a cream page */
+  --admin-sidebar: #17150f;
+  --admin-sidebar-active: rgba(255, 255, 255, 0.12);
+  --admin-sidebar-text: #cfcabf;
+  --admin-logout: #c0392b;
+  --admin-muted: #8a8478;
+
+  /* Organic tokens, re-pointed to the Cartly palette */
+  --color-bg: #f4f2ee;
+  --color-surface: #ffffff;
+  --color-text: #17150f;
+  --color-accent: oklch(0.55 0.13 155);
+  --color-accent-600: oklch(0.5 0.13 155);
+  --color-accent-700: oklch(0.45 0.13 155);
+  --color-divider: #e7e3db;
+  --color-danger: #c0392b;
+
+  --font-body: "Manrope", system-ui, sans-serif;
+  --font-heading: "Bricolage Grotesque", "Manrope", system-ui, sans-serif;
+  --font-heading-weight: 700;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+
+  --shadow-sm: 0 2px 8px rgba(23, 21, 15, 0.06);
+  --shadow-md: 0 6px 18px rgba(23, 21, 15, 0.08);
+  --shadow-lg: 0 18px 40px rgba(23, 21, 15, 0.14);
+
+  color: var(--color-text);
+  background: var(--color-bg);
+
+  /* — shape overrides: the storefront's pill inputs/buttons read as too soft here — */
+  .input {
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    border-color: var(--color-divider);
+  }
+  .btn { border-radius: var(--radius-md); letter-spacing: 0; }
+  .btn-secondary { background: var(--color-surface); }
+  .card { border-radius: var(--radius-lg); border: 1px solid var(--color-divider); }
+
+  .table th {
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--admin-muted);
+    padding: var(--space-3) var(--space-2);
+  }
+  .table td { padding: var(--space-3) var(--space-2); }
+  .table tbody tr:last-child td { border-bottom: 0; }
+  .table tbody tr:hover { background: #faf9f6; }
+
+  /* — status pills, Cartly greens/neutrals — */
+  .tag {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 12px;
+  }
+  .tag-accent { background: #e6f4ec; color: oklch(0.45 0.13 155); }
+  .tag-accent-2 { background: #e6f4ec; color: oklch(0.45 0.13 155); }
+  .tag-neutral { background: #f4f2ee; color: #8a8478; }
+  .tag-danger { background: #fbe9e7; color: #c0392b; }
+}
