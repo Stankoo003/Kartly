@@ -1,0 +1,192 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   Cartly storefront theme — scoped to .store-shell.
+
+   Applied to the public storefront + /login (App adds the class when the route
+   is not /admin). Admin never receives it, so its navy theme is untouched.
+   Distinct visual identity from both Organic (old storefront) and the admin
+   panel: Bricolage Grotesque display + Manrope body, warm paper ground, ink
+   near-black, green accent.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.store-shell {
+  --store-bg: #f4f2ee;
+  --store-surface: #ffffff;
+  --store-ink: #17150f;
+  --store-ink-soft: #5c574c;
+  --store-muted: #8a8478;
+  --store-border: #e7e3db;
+  --store-panel: #efece6;
+  --store-accent: oklch(0.55 0.13 155);
+  --store-accent-strong: oklch(0.5 0.13 155);
+  --store-accent-tint: oklch(0.92 0.03 155);
+
+  --store-display: "Bricolage Grotesque", "Manrope", system-ui, sans-serif;
+  --store-body: "Manrope", system-ui, sans-serif;
+
+  --store-radius: 16px;
+  --store-radius-lg: 22px;
+
+  min-height: 100vh;
+  background: var(--store-bg);
+  color: var(--store-ink);
+  font-family: var(--store-body);
+  font-size: 15px;
+  line-height: 1.55;
+
+  /* A striped placeholder, used wherever a real image is missing (hero, cards). */
+  --store-stripe: repeating-linear-gradient(
+    45deg, var(--store-panel), var(--store-panel) 8px, var(--store-border) 8px, var(--store-border) 16px);
+
+  h1, h2, h3, h4 { font-family: var(--store-display); font-weight: 600; letter-spacing: -0.02em; line-height: 1.1; }
+
+  a { color: var(--store-ink); text-decoration: none; }
+  a:hover { color: var(--store-accent-strong); }
+
+  /* — Cartly overrides of the shared component classes, so /login (which uses
+       .card/.input/.btn) restyles here without editing its template — */
+  .card {
+    background: var(--store-surface);
+    border: 1px solid var(--store-border);
+    border-radius: var(--store-radius);
+    box-shadow: none;
+  }
+  .input {
+    background: var(--store-surface);
+    border: 1px solid var(--store-border);
+    border-radius: 10px;
+    color: var(--store-ink);
+    min-height: 44px;
+  }
+  .input:focus-visible { border-color: var(--store-accent); outline: none; }
+
+  .btn {
+    font-family: var(--store-body);
+    font-weight: 600;
+    border-radius: 999px;
+    letter-spacing: 0;
+  }
+  .btn-primary { background: var(--store-ink); color: #fff; border-color: var(--store-ink); }
+  .btn-primary:hover:not(:disabled) { background: #000; }
+  .btn-secondary { background: var(--store-surface); border-color: var(--store-border); color: var(--store-ink); }
+  .btn-ghost { color: var(--store-accent-strong); }
+}
+
+/* ── storefront chrome (announcement / header / footer) ─────────────────── */
+
+.store-shell .announce {
+  background: var(--store-ink);
+  color: #cfcabf;
+  font-size: 12.5px;
+  letter-spacing: 0.02em;
+}
+.store-shell .announce .wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 9px 24px;
+}
+.store-shell .announce .trust { display: flex; gap: 20px; align-items: center; }
+.store-shell .announce .dot { opacity: 0.5; }
+
+.store-shell .wrap { max-width: 1240px; margin: 0 auto; }
+
+.store-header {
+  background: var(--store-surface);
+  border-bottom: 1px solid var(--store-border);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+.store-header .bar {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding: 16px 24px;
+}
+.store-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--store-display);
+  font-weight: 700;
+  font-size: 24px;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+.store-brand .mark {
+  width: 26px; height: 26px; flex: none;
+  background: var(--store-accent);
+  border-radius: 8px;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 15px; font-family: var(--store-body); font-weight: 700;
+}
+.store-search {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  background: var(--store-bg);
+  border: 1px solid var(--store-border);
+  border-radius: 999px;
+  padding: 0 6px 0 18px;
+  max-width: 560px;
+}
+.store-search input {
+  flex: 1; border: none; background: none; padding: 12px 0;
+  font: inherit; font-size: 14.5px; color: var(--store-ink);
+}
+.store-search input:focus { outline: none; }
+.store-search button {
+  border: none; background: var(--store-ink); color: #fff;
+  border-radius: 999px; width: 38px; height: 38px; flex: none; cursor: pointer; font-size: 15px;
+}
+.store-actions { display: flex; align-items: center; gap: 20px; font-size: 13.5px; }
+.store-actions .who { color: var(--store-muted); }
+.store-actions .cart { display: flex; align-items: center; gap: 7px; font-weight: 600; cursor: pointer; }
+
+.store-cats {
+  display: flex; gap: 6px; flex-wrap: wrap;
+  padding: 0 24px 12px;
+}
+.store-cats a, .store-cats span {
+  font-size: 13px; color: var(--store-ink-soft);
+  padding: 6px 12px; border-radius: 999px; cursor: pointer;
+}
+.store-cats a:hover, .store-cats span:hover { background: var(--store-panel); color: var(--store-ink); }
+
+.store-footer {
+  background: var(--store-ink);
+  color: #cfcabf;
+  margin-top: 56px;
+}
+.store-footer .cols {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 32px;
+  padding: 48px 24px 32px;
+}
+.store-footer .brand {
+  font-family: var(--store-display); font-weight: 700; font-size: 22px; color: #fff; margin-bottom: 12px;
+}
+.store-footer .blurb { font-size: 13.5px; line-height: 1.6; max-width: 280px; color: #9a958a; }
+.store-footer h4 { font-family: var(--store-body); color: #fff; font-weight: 600; font-size: 14px; margin: 0 0 14px; letter-spacing: 0; }
+.store-footer .links { display: flex; flex-direction: column; gap: 9px; font-size: 13.5px; }
+.store-footer .links a { color: #cfcabf; }
+.store-footer .links a:hover { color: #fff; }
+.store-footer .base {
+  border-top: 1px solid #2a2822;
+  padding: 18px 24px;
+  text-align: center;
+  font-size: 12.5px;
+  color: #7c776c;
+}
+
+@media (max-width: 860px) {
+  .store-footer .cols { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 760px) {
+  .store-header .bar { flex-wrap: wrap; gap: 14px; }
+  .store-search { order: 3; max-width: none; flex-basis: 100%; }
+  .store-announce-hide { display: none; }
+  .store-footer .cols { grid-template-columns: 1fr; gap: 22px; }
+}

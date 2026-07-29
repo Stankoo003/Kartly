@@ -36,6 +36,8 @@ export class AdminSettings {
       siteName: this.form.siteName.trim(),
       contactEmail: this.form.contactEmail.trim(),
       currency: this.form.currency,
+      bannerTitle: this.form.bannerTitle.trim(),
+      bannerSubtitle: this.form.bannerSubtitle.trim(),
     }).subscribe({
       next: () => {
         this.saving.set(false);
@@ -67,6 +69,12 @@ export class AdminSettings {
     else if (!/^\S+@\S+\.\S+$/.test(email)) errors['contactEmail'] = 'Enter a valid email address.';
 
     if (!this.form.currency) errors['currency'] = 'Currency is required.';
+
+    if (!this.form.bannerTitle.trim()) errors['bannerTitle'] = 'Banner title is required.';
+    else if (this.form.bannerTitle.trim().length > 100) errors['bannerTitle'] = 'Banner title is too long (max 100).';
+
+    if (!this.form.bannerSubtitle.trim()) errors['bannerSubtitle'] = 'Banner subtitle is required.';
+    else if (this.form.bannerSubtitle.trim().length > 200) errors['bannerSubtitle'] = 'Banner subtitle is too long (max 200).';
 
     this.fieldErrors.set(errors);
     return Object.keys(errors).length === 0;

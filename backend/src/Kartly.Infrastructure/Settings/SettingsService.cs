@@ -21,6 +21,8 @@ public sealed class SettingsService(KartlyDbContext context) : ISettingsService
         settings.SiteName = request.SiteName.Trim();
         settings.ContactEmail = request.ContactEmail.Trim();
         settings.Currency = request.Currency.Trim().ToUpperInvariant();
+        settings.BannerTitle = request.BannerTitle.Trim();
+        settings.BannerSubtitle = request.BannerSubtitle.Trim();
         settings.UpdatedAt = DateTime.UtcNow;
 
         await context.SaveChangesAsync(ct);

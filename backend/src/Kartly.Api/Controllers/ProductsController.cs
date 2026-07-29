@@ -12,15 +12,24 @@ namespace Kartly.Api.Controllers;
 public sealed class ProductsController(
     IProductService productService, IImageStorage imageStorage) : ControllerBase
 {
-    /// <summary>Returns a filtered, sorted, paginated list of products.</summary>
+    /// <summary>Returns a filtered, sorted, paginated list of products. Public — the storefront browses anonymously.</summary>
     [HttpGet]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(PagedResult<ProductResponse>), StatusCodes.Status200OK)]
     public async Task<ActionResult<PagedResult<ProductResponse>>> GetAll(
         [FromQuery] ProductQueryParameters query, CancellationToken ct)
-        => Ok(await productService.GetProductsAsync(query, ct));
+    {
+        // Only admins may see soft-deleted (inactive) products; force active-only for everyone else,
+        // so an anonymous caller can't surface them by passing isActive=false.
+        if (!User.IsInRole(Roles.Admin))
+            query = query with { IsActive = true };
 
-    /// <summary>Returns a single product by id.</summary>
+        return Ok(await productService.GetProductsAsync(query, ct));
+    }
+
+    /// <summary>Returns a single product by id. Public — the storefront browses anonymously.</summary>
     [HttpGet("{id:guid}", Name = nameof(GetById))]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ProductResponse>> GetById(Guid id, CancellationToken ct)

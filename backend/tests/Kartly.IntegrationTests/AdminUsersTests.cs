@@ -185,16 +185,19 @@ public sealed class AdminUsersTests : IClassFixture<PostgresApiFactory>
         var token = await RegisterAsync(customer, email, password);
         customer.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-        // Works while active.
-        Assert.Equal(HttpStatusCode.OK, (await customer.GetAsync("/api/products")).StatusCode);
+        // While active, the token authenticates: an admin-only write is Forbidden (wrong role), not 401.
+        // (Catalog GETs are public, so we probe a write to exercise authentication.)
+        Assert.Equal(HttpStatusCode.Forbidden,
+            (await customer.PostAsJsonAsync("/api/products", NewProduct())).StatusCode);
 
         // Deactivate.
         var id = await GetUserIdByEmailAsync(admin, email);
         Assert.Equal(HttpStatusCode.OK,
             (await admin.PutAsJsonAsync($"/api/admin/users/{id}/active", new { isActive = false })).StatusCode);
 
-        // Existing token is now rejected, and they cannot obtain a new one.
-        Assert.Equal(HttpStatusCode.Unauthorized, (await customer.GetAsync("/api/products")).StatusCode);
+        // The existing token is now rejected at authentication (401, not 403), and they cannot log in.
+        Assert.Equal(HttpStatusCode.Unauthorized,
+            (await customer.PostAsJsonAsync("/api/products", NewProduct())).StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized,
             (await customer.PostAsJsonAsync("/api/auth/login", new { email, password })).StatusCode);
 

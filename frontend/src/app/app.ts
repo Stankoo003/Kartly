@@ -4,11 +4,11 @@ import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } fro
 import { filter, map } from 'rxjs';
 import { AuthService } from './auth/auth.service';
 import { SettingsService } from './settings/settings.service';
-import { UiButton } from './ui/ui-button';
+import { PRODUCT_CATEGORIES } from './products/product.models';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, UiButton],
+  imports: [RouterOutlet, RouterLink],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })

@@ -18,10 +18,12 @@ describe('App', () => {
     expect(app).toBeTruthy();
   });
 
-  it('should render the nav', async () => {
+  it('should render the storefront header with the brand and a sign-in link', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('nav')?.textContent).toContain('Home');
+    // Storefront chrome shows for the default (non-admin) route.
+    expect(compiled.querySelector('.store-brand')?.textContent).toContain('Kartly');
+    expect(compiled.querySelector('.store-actions')?.textContent).toContain('Sign in');
   });
 });

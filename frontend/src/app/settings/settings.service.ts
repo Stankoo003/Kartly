@@ -5,7 +5,13 @@ import { Observable, catchError, of, tap } from 'rxjs';
 import { SiteSettings, UpdateSiteSettingsRequest } from './site-settings.models';
 
 /** Used until the API responds (and if it never does), so the UI always renders something sane. */
-const FALLBACK = { siteName: 'Kartly', contactEmail: '', currency: 'RSD' } as const;
+const FALLBACK = {
+  siteName: 'Kartly',
+  contactEmail: '',
+  currency: 'RSD',
+  bannerTitle: 'Everything you love, in one cart.',
+  bannerSubtitle: 'Curated products from the brands you trust — delivered fast, returned free.',
+} as const;
 
 /**
  * Holds the site-wide settings. Signal-backed so the storefront (nav, footer, prices) re-renders
@@ -20,6 +26,8 @@ export class SettingsService {
   readonly siteName = computed(() => this.settings()?.siteName || FALLBACK.siteName);
   readonly contactEmail = computed(() => this.settings()?.contactEmail ?? FALLBACK.contactEmail);
   readonly currency = computed(() => this.settings()?.currency || FALLBACK.currency);
+  readonly bannerTitle = computed(() => this.settings()?.bannerTitle || FALLBACK.bannerTitle);
+  readonly bannerSubtitle = computed(() => this.settings()?.bannerSubtitle || FALLBACK.bannerSubtitle);
 
   /** Current values for an edit form, falling back to defaults before the first load. */
   snapshot(): UpdateSiteSettingsRequest {
@@ -27,6 +35,8 @@ export class SettingsService {
       siteName: this.siteName(),
       contactEmail: this.contactEmail(),
       currency: this.currency(),
+      bannerTitle: this.bannerTitle(),
+      bannerSubtitle: this.bannerSubtitle(),
     };
   }
 

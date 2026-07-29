@@ -11,6 +11,8 @@ export interface SiteSettings {
   siteName: string;
   contactEmail: string;
   currency: string;
+  bannerTitle: string;
+  bannerSubtitle: string;
   updatedAt: string;
 }
 
@@ -19,4 +21,6 @@ export interface UpdateSiteSettingsRequest {
   siteName: string;
   contactEmail: string;
   currency: string;
+  bannerTitle: string;
+  bannerSubtitle: string;
 }

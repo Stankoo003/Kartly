@@ -17,7 +17,13 @@ public sealed class SettingsTests : IClassFixture<PostgresApiFactory>
     public SettingsTests(PostgresApiFactory factory) => _factory = factory;
 
     private sealed record AuthResponse(string Token, string Email, string Role, DateTimeOffset ExpiresAt);
-    private sealed record SettingsResponse(string SiteName, string ContactEmail, string Currency, DateTime UpdatedAt);
+    private sealed record SettingsResponse(
+        string SiteName, string ContactEmail, string Currency,
+        string BannerTitle, string BannerSubtitle, DateTime UpdatedAt);
+
+    // Valid banner fields to satisfy the [Required] rules on every update payload.
+    private const string Bt = "Shop the season";
+    private const string Bs = "Curated picks, delivered fast.";
 
     // --- read ---
 
@@ -33,6 +39,8 @@ public sealed class SettingsTests : IClassFixture<PostgresApiFactory>
         Assert.False(string.IsNullOrWhiteSpace(body!.SiteName));
         Assert.False(string.IsNullOrWhiteSpace(body.ContactEmail));
         Assert.False(string.IsNullOrWhiteSpace(body.Currency));
+        Assert.False(string.IsNullOrWhiteSpace(body.BannerTitle));
+        Assert.False(string.IsNullOrWhiteSpace(body.BannerSubtitle));
     }
 
     // --- update ---
@@ -43,20 +51,27 @@ public sealed class SettingsTests : IClassFixture<PostgresApiFactory>
         var admin = _factory.CreateClient();
         await AuthenticateAsAdminAsync(admin);
 
-        var payload = new { siteName = "Kartly Shop", contactEmail = "hello@kartly.test", currency = "EUR" };
+        var payload = new
+        {
+            siteName = "Kartly Shop", contactEmail = "hello@kartly.test", currency = "EUR",
+            bannerTitle = "Big summer sale", bannerSubtitle = "Up to 40% off everything",
+        };
         var update = await admin.PutAsJsonAsync("/api/settings", payload);
 
         Assert.Equal(HttpStatusCode.OK, update.StatusCode);
         var updated = await update.Content.ReadFromJsonAsync<SettingsResponse>();
         Assert.Equal("Kartly Shop", updated!.SiteName);
         Assert.Equal("EUR", updated.Currency);
+        Assert.Equal("Big summer sale", updated.BannerTitle);
 
-        // The storefront (anonymous) sees the new values.
+        // The storefront (anonymous) sees the new values, banner included.
         var anonymous = _factory.CreateClient();
         var read = await anonymous.GetFromJsonAsync<SettingsResponse>("/api/settings");
         Assert.Equal("Kartly Shop", read!.SiteName);
         Assert.Equal("hello@kartly.test", read.ContactEmail);
         Assert.Equal("EUR", read.Currency);
+        Assert.Equal("Big summer sale", read.BannerTitle);
+        Assert.Equal("Up to 40% off everything", read.BannerSubtitle);
     }
 
     [Fact]
@@ -68,6 +83,7 @@ public sealed class SettingsTests : IClassFixture<PostgresApiFactory>
         var response = await client.PutAsJsonAsync("/api/settings", new
         {
             siteName = "Case Test", contactEmail = "case@kartly.test", currency = "usd",
+            bannerTitle = Bt, bannerSubtitle = Bs,
         });
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -86,6 +102,7 @@ public sealed class SettingsTests : IClassFixture<PostgresApiFactory>
         var response = await client.PutAsJsonAsync("/api/settings", new
         {
             siteName = "Nope", contactEmail = "nope@kartly.test", currency = "EUR",
+            bannerTitle = Bt, bannerSubtitle = Bs,
         });
 
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
@@ -107,16 +124,20 @@ public sealed class SettingsTests : IClassFixture<PostgresApiFactory>
     // --- validation ---
 
     [Theory]
-    [InlineData("", "ok@kartly.test", "EUR")]            // blank site name
-    [InlineData("Shop", "not-an-email", "EUR")]          // malformed contact email
-    [InlineData("Shop", "ok@kartly.test", "XYZ")]        // unsupported currency
-    [InlineData("Shop", "ok@kartly.test", "")]           // missing currency
-    public async Task Update_InvalidPayload_Returns400(string siteName, string contactEmail, string currency)
+    [InlineData("", "ok@kartly.test", "EUR", "Title", "Sub")]        // blank site name
+    [InlineData("Shop", "not-an-email", "EUR", "Title", "Sub")]      // malformed contact email
+    [InlineData("Shop", "ok@kartly.test", "XYZ", "Title", "Sub")]    // unsupported currency
+    [InlineData("Shop", "ok@kartly.test", "", "Title", "Sub")]       // missing currency
+    [InlineData("Shop", "ok@kartly.test", "EUR", "", "Sub")]         // blank banner title
+    [InlineData("Shop", "ok@kartly.test", "EUR", "Title", "")]       // blank banner subtitle
+    public async Task Update_InvalidPayload_Returns400(
+        string siteName, string contactEmail, string currency, string bannerTitle, string bannerSubtitle)
     {
         var client = _factory.CreateClient();
         await AuthenticateAsAdminAsync(client);
 
-        var response = await client.PutAsJsonAsync("/api/settings", new { siteName, contactEmail, currency });
+        var response = await client.PutAsJsonAsync("/api/settings",
+            new { siteName, contactEmail, currency, bannerTitle, bannerSubtitle });
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
