@@ -162,6 +162,52 @@ public sealed class ProductsTests : IClassFixture<PostgresApiFactory>
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 
+    // --- GET by slug (deep-linkable product detail) ---
+
+    [Fact]
+    public async Task GetBySlug_ExistingProduct_ReturnsProductAnonymously()
+    {
+        var admin = _factory.CreateClient();
+        var created = await CreateProductAsync(admin, Unique("byslug"));
+
+        var anon = _factory.CreateClient(); // no token
+        var response = await anon.GetAsync($"/api/products/slug/{created.Slug}");
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var body = await response.Content.ReadFromJsonAsync<ProductResponse>();
+        Assert.Equal(created.Id, body!.Id);
+        Assert.Equal(created.Slug, body.Slug);
+    }
+
+    [Fact]
+    public async Task GetBySlug_UnknownSlug_Returns404()
+    {
+        var anon = _factory.CreateClient();
+
+        var response = await anon.GetAsync($"/api/products/slug/{Unique("nope")}");
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Get_SoftDeletedProduct_Is404ForAnonymous_ButVisibleToAdmin()
+    {
+        // Admin creates then soft-deletes (deactivates) a product.
+        var admin = _factory.CreateClient();
+        var created = await CreateProductAsync(admin, Unique("gone"));
+        Assert.Equal(HttpStatusCode.NoContent,
+            (await admin.DeleteAsync($"/api/products/{created.Id}")).StatusCode);
+
+        // Anonymous: hidden by both the id and slug endpoints.
+        var anon = _factory.CreateClient();
+        Assert.Equal(HttpStatusCode.NotFound, (await anon.GetAsync($"/api/products/{created.Id}")).StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, (await anon.GetAsync($"/api/products/slug/{created.Slug}")).StatusCode);
+
+        // Admin: still resolves it (needed to manage/reactivate).
+        Assert.Equal(HttpStatusCode.OK, (await admin.GetAsync($"/api/products/{created.Id}")).StatusCode);
+        Assert.Equal(HttpStatusCode.OK, (await admin.GetAsync($"/api/products/slug/{created.Slug}")).StatusCode);
+    }
+
     // --- POST: create ---
 
     [Fact]

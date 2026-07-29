@@ -13,6 +13,9 @@ public interface IProductRepository
     /// <summary>Loads a tracked product (usable for updates), or null if missing.</summary>
     Task<Product?> GetByIdAsync(Guid id, CancellationToken ct = default);
 
+    /// <summary>Loads a product by its unique slug, or null if missing.</summary>
+    Task<Product?> GetBySlugAsync(string slug, CancellationToken ct = default);
+
     Task AddAsync(Product product, CancellationToken ct = default);
 
     Task UpdateAsync(Product product, CancellationToken ct = default);

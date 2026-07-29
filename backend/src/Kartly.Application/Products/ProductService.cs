@@ -5,6 +5,7 @@ public interface IProductService
 {
     Task<PagedResult<ProductResponse>> GetProductsAsync(ProductQueryParameters query, CancellationToken ct = default);
     Task<ProductResponse> GetProductByIdAsync(Guid id, CancellationToken ct = default);
+    Task<ProductResponse> GetProductBySlugAsync(string slug, CancellationToken ct = default);
     Task<ProductResponse> CreateProductAsync(CreateProductRequest request, CancellationToken ct = default);
     Task<ProductResponse> UpdateProductAsync(Guid id, UpdateProductRequest request, CancellationToken ct = default);
     Task DeleteProductAsync(Guid id, CancellationToken ct = default);
@@ -24,6 +25,13 @@ public sealed class ProductService(IProductRepository repository) : IProductServ
     {
         var product = await repository.GetByIdAsync(id, ct)
             ?? throw new ProductNotFoundException(id);
+        return ProductResponse.FromEntity(product);
+    }
+
+    public async Task<ProductResponse> GetProductBySlugAsync(string slug, CancellationToken ct = default)
+    {
+        var product = await repository.GetBySlugAsync(slug, ct)
+            ?? throw new ProductNotFoundException(slug);
         return ProductResponse.FromEntity(product);
     }
 

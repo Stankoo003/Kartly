@@ -64,6 +64,9 @@ public sealed class EfProductRepository(KartlyDbContext context) : IProductRepos
     public async Task<Product?> GetByIdAsync(Guid id, CancellationToken ct = default)
         => await context.Products.FirstOrDefaultAsync(p => p.Id == id, ct);
 
+    public async Task<Product?> GetBySlugAsync(string slug, CancellationToken ct = default)
+        => await context.Products.FirstOrDefaultAsync(p => p.Slug == slug, ct);
+
     public async Task AddAsync(Product product, CancellationToken ct = default)
     {
         context.Products.Add(product);

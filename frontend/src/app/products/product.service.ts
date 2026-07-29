@@ -29,6 +29,11 @@ export class ProductService {
     return this.http.get<Product>(`${this.baseUrl}/${id}`);
   }
 
+  /** Fetch a product by its slug — powers the deep-linkable detail page. 404 when missing/inactive. */
+  getBySlug(slug: string): Observable<Product> {
+    return this.http.get<Product>(`${this.baseUrl}/slug/${encodeURIComponent(slug)}`);
+  }
+
   create(request: CreateProductRequest): Observable<Product> {
     return this.http.post<Product>(this.baseUrl, request);
   }

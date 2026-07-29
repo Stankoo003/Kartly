@@ -36,12 +36,40 @@ public sealed class ProductsController(
     {
         try
         {
-            return Ok(await productService.GetProductByIdAsync(id, ct));
+            return VisibleOrNotFound(await productService.GetProductByIdAsync(id, ct));
         }
         catch (ProductNotFoundException ex)
         {
             return NotFound(new { error = ex.Message });
         }
+    }
+
+    /// <summary>Returns a single product by its slug. Public — used for deep-linkable product pages.</summary>
+    [HttpGet("slug/{slug}")]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(ProductResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<ProductResponse>> GetBySlug(string slug, CancellationToken ct)
+    {
+        try
+        {
+            return VisibleOrNotFound(await productService.GetProductBySlugAsync(slug, ct));
+        }
+        catch (ProductNotFoundException ex)
+        {
+            return NotFound(new { error = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Hides soft-deleted (inactive) products from non-admins, so a direct link to a removed product
+    /// 404s for the public while an admin can still resolve it.
+    /// </summary>
+    private ActionResult<ProductResponse> VisibleOrNotFound(ProductResponse product)
+    {
+        if (!product.IsActive && !User.IsInRole(Roles.Admin))
+            return NotFound(new { error = "Product was not found." });
+        return Ok(product);
     }
 
     /// <summary>Uploads a product image to the API's local storage and returns its URL. Admin only.</summary>
