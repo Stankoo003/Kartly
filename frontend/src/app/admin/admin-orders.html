@@ -1,0 +1,124 @@
+<main class="screen">
+  <header class="screen-head">
+    <div>
+      <h2>Orders</h2>
+      <p class="text-muted count">{{ total() }} total</p>
+    </div>
+    <label class="field status-filter">
+      <span class="text-muted">Status</span>
+      <select class="input" [value]="statusFilter()" (change)="setStatusFilter($any($event.target).value)">
+        <option value="">All</option>
+        @for (s of statuses; track s) { <option [value]="s">{{ s }}</option> }
+      </select>
+    </label>
+  </header>
+
+  @if (error()) {
+    <div class="banner" role="alert">
+      <span>{{ error() }}</span>
+      <button uiButton variant="ghost" size="sm" (click)="load()">Retry</button>
+    </div>
+  }
+
+  @if (loading()) {
+    <p class="state text-muted">Loading…</p>
+  } @else if (orders().length === 0) {
+    <div class="card elev-sm empty"><p class="text-muted">No orders yet.</p></div>
+  } @else {
+    <div class="card elev-sm table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Order</th>
+            <th>Email</th>
+            <th class="num">Items</th>
+            <th class="num">Total</th>
+            <th>Status</th>
+            <th>Placed</th>
+            <th class="actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (o of orders(); track o.id) {
+            <tr>
+              <td class="mono">{{ shortId(o.id) }}</td>
+              <td>{{ o.contactEmail }}</td>
+              <td class="num">{{ o.itemCount }}</td>
+              <td class="num">{{ o.total | currency: settings.currency() }}</td>
+              <td>
+                <span class="tag"
+                  [class.tag-neutral]="o.status === 'Pending'"
+                  [class.tag-accent]="o.status === 'Confirmed'"
+                  [class.tag-accent-2]="o.status === 'Shipped'"
+                  [class.tag-danger]="o.status === 'Cancelled'">{{ o.status }}</span>
+              </td>
+              <td class="text-muted">{{ o.createdAt | date: 'short' }}</td>
+              <td class="actions">
+                <button uiButton variant="ghost" size="sm" (click)="openDetail(o)">View</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <nav class="pager">
+      <button uiButton variant="secondary" size="sm" [disabled]="page() <= 1" (click)="goToPage(page() - 1)">Prev</button>
+      <span class="text-muted">Page {{ page() }} / {{ totalPages() }}</span>
+      <button uiButton variant="secondary" size="sm" [disabled]="page() >= totalPages()" (click)="goToPage(page() + 1)">Next</button>
+    </nav>
+  }
+</main>
+
+<!-- Order detail + lifecycle -->
+<ui-dialog [open]="dialogOpen()" (close)="closeDialog()">
+  <h3 class="dialog-title">Order details</h3>
+  <div class="dialog-body">
+    @if (detail(); as o) {
+      <div class="od-head">
+        <span class="mono">{{ o.id }}</span>
+        <span class="tag"
+          [class.tag-neutral]="o.status === 'Pending'"
+          [class.tag-accent]="o.status === 'Confirmed'"
+          [class.tag-accent-2]="o.status === 'Shipped'"
+          [class.tag-danger]="o.status === 'Cancelled'">{{ o.status }}</span>
+      </div>
+
+      <div class="od-lines">
+        @for (l of o.lines; track l.productId) {
+          <div class="od-line">
+            <span>{{ l.quantity }}× {{ l.productName }}</span>
+            <span>{{ l.lineTotal | currency: settings.currency() }}</span>
+          </div>
+        }
+        <div class="od-line total">
+          <span>Total</span>
+          <span>{{ o.total | currency: settings.currency() }}</span>
+        </div>
+      </div>
+
+      <div class="od-ship text-muted">
+        {{ o.shipFirstName }} {{ o.shipLastName }} · {{ o.contactEmail }} · {{ o.contactPhone }}<br />
+        {{ o.shipAddress }}, {{ o.shipCity }} {{ o.shipZip }}, {{ o.shipCountry }}
+      </div>
+
+      @if (detailError()) { <p class="form-error" role="alert">{{ detailError() }}</p> }
+    } @else if (detailError()) {
+      <p class="form-error">{{ detailError() }}</p>
+    } @else {
+      <p class="text-muted">Loading…</p>
+    }
+  </div>
+
+  <div class="dialog-actions">
+    <button uiButton variant="secondary" [disabled]="saving()" (click)="closeDialog()">Close</button>
+    @if (canCancel()) {
+      <button uiButton variant="danger" [disabled]="saving()" (click)="cancel()">Cancel order</button>
+    }
+    @if (advanceTarget(); as next) {
+      <button uiButton variant="primary" [disabled]="saving()" (click)="advance()">
+        {{ saving() ? 'Saving…' : 'Advance to ' + next }}
+      </button>
+    }
+  </div>
+</ui-dialog>

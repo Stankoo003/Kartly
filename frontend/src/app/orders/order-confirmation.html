@@ -1,0 +1,51 @@
+<main class="confirm wrap">
+  @switch (status()) {
+    @case ('loading') {
+      <div class="card"><p class="muted">Loading your order…</p></div>
+    }
+    @case ('not-found') {
+      <div class="card center">
+        <h2>Order not found</h2>
+        <p class="muted">We couldn’t find that order.</p>
+        <a class="btn btn-primary" routerLink="/">Back to home</a>
+      </div>
+    }
+    @case ('loaded') {
+      @if (order(); as o) {
+        <div class="card">
+          <div class="check">✓</div>
+          <h1>Order placed</h1>
+          <p class="muted">
+            Order <b>{{ o.id }}</b> · Total {{ o.total | currency: settings.currency() }} ·
+            prices &amp; stock re-validated server-side.
+          </p>
+
+          <div class="status-row">
+            <span class="label">Status</span>
+            <span class="status-pill">{{ o.status }}</span>
+          </div>
+
+          <div class="lines">
+            @for (l of o.lines; track l.productId) {
+              <div class="line">
+                <span>{{ l.quantity }}× {{ l.productName }}</span>
+                <span>{{ l.lineTotal | currency: settings.currency() }}</span>
+              </div>
+            }
+            <div class="line total">
+              <span>Total</span>
+              <span>{{ o.total | currency: settings.currency() }}</span>
+            </div>
+          </div>
+
+          <div class="ship muted">
+            Shipping to {{ o.shipFirstName }} {{ o.shipLastName }}, {{ o.shipAddress }},
+            {{ o.shipCity }} {{ o.shipZip }}, {{ o.shipCountry }}
+          </div>
+
+          <a class="btn btn-primary back" routerLink="/">Back to home</a>
+        </div>
+      }
+    }
+  }
+</main>

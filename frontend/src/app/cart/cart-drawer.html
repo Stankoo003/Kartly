@@ -40,9 +40,7 @@
           <span>{{ cart.subtotal() | currency: settings.currency() }}</span>
         </div>
         <a class="btn btn-secondary view-cart" routerLink="/cart" (click)="cart.close()">View cart</a>
-        <button type="button" class="btn btn-primary checkout" disabled title="Checkout — coming soon">
-          Checkout →
-        </button>
+        <a class="btn btn-primary checkout" routerLink="/checkout" (click)="cart.close()">Checkout →</a>
       </footer>
     }
   </aside>

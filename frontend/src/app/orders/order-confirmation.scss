@@ -1,0 +1,48 @@
+.confirm { padding: 24px; max-width: 720px; }
+
+.card {
+  background: var(--store-surface);
+  border: 1px solid var(--store-border);
+  border-radius: var(--store-radius);
+  padding: 44px;
+}
+.card.center { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+
+.check {
+  width: 56px; height: 56px;
+  border-radius: 999px;
+  background: var(--store-accent-tint);
+  color: var(--store-accent-strong);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px;
+  margin-bottom: 18px;
+}
+.confirm h1 { font-size: 30px; letter-spacing: -0.02em; margin: 0 0 6px; }
+.muted { color: var(--store-muted); font-size: 14.5px; }
+
+.status-row { display: flex; align-items: center; gap: 12px; margin: 22px 0; }
+.status-row .label { font-weight: 700; font-size: 13px; }
+.status-pill {
+  font-size: 12.5px; font-weight: 600;
+  padding: 5px 12px; border-radius: 999px;
+  background: #eee9ff; color: #4318ff;
+}
+
+.lines {
+  border-top: 1px solid var(--store-border);
+  border-bottom: 1px solid var(--store-border);
+  padding: 8px 0;
+  margin-bottom: 18px;
+}
+.line {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 14px;
+  padding: 8px 0;
+  color: var(--store-ink-soft);
+}
+.line.total { font-weight: 700; font-size: 16px; color: var(--store-ink); border-top: 1px solid var(--store-panel); }
+
+.ship { margin-bottom: 24px; }
+.back { padding: 13px 26px; }

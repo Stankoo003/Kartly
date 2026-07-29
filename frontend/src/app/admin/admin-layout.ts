@@ -6,7 +6,7 @@ import { AuthService } from '../auth/auth.service';
 import { SettingsService } from '../settings/settings.service';
 
 /**
- * Admin shell: a dark sidebar (Products / Users / Settings + sign out) beside a
+ * Admin shell: a dark sidebar (Products / Orders / Users / Settings + sign out) beside a
  * topbar and the active section. It deliberately replaces the storefront chrome —
  * App hides its nav and footer under /admin. Every route beneath it is protected
  * by the adminGuard wired up in app.routes.ts.
