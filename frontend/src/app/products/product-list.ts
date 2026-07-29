@@ -1,7 +1,8 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Params, Router, RouterLink } from '@angular/router';
-import { map } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map } from 'rxjs';
 import { ProductService } from './product.service';
 import { PRODUCT_CATEGORIES, Product, ProductQuery, ProductSortBy } from './product.models';
 import { ProductCard } from './product-card';
@@ -29,7 +30,7 @@ const PAGE_SIZE = 9;
 /** Public catalog: category + price filters, search, sort and pagination, all driven by the URL. */
 @Component({
   selector: 'app-product-list',
-  imports: [ProductCard, RouterLink],
+  imports: [ProductCard, RouterLink, ReactiveFormsModule],
   templateUrl: './product-list.html',
   styleUrl: './product-list.scss',
 })
@@ -58,6 +59,9 @@ export class ProductList {
   protected readonly sort = computed<SortKey>(() => this.params().sort);
   protected readonly maxPrice = computed(() => this.params().maxPrice);
   protected readonly page = computed(() => this.params().page);
+
+  /** On-page search box — debounced, two-way-synced with the ?search= URL param. */
+  protected readonly searchControl = new FormControl('');
 
   protected readonly loading = signal(false);
   protected readonly error = signal('');
@@ -96,6 +100,21 @@ export class ProductList {
     effect(() => {
       const p = this.params();
       this.load(p);
+    });
+
+    // Debounced typing → the URL (one request after the pause, not per keystroke).
+    // navigate() nulls `page`, so a new term resets to page 1.
+    this.searchControl.valueChanges
+      .pipe(debounceTime(300), distinctUntilChanged())
+      .subscribe(value => this.navigate({ search: value?.trim() || null }));
+
+    // Keep the URL the source of truth: reflect external search changes (header search,
+    // category click, reset) back into the box without re-triggering a navigation.
+    effect(() => {
+      const s = this.search();
+      if (s !== (this.searchControl.value ?? '')) {
+        this.searchControl.setValue(s, { emitEvent: false });
+      }
     });
   }
 

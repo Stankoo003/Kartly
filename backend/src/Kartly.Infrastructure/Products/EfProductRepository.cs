@@ -38,6 +38,7 @@ public sealed class EfProductRepository(KartlyDbContext context) : IProductRepos
             products = products.Where(p =>
                 EF.Functions.ILike(p.Name, term) ||
                 EF.Functions.ILike(p.Sku, term) ||
+                EF.Functions.ILike(p.Category, term) ||
                 (p.Brand != null && EF.Functions.ILike(p.Brand, term)));
         }
 
